@@ -1,0 +1,41 @@
+get_data.py скачивает данные с кинопоиска.
+prepare_data.py обрабатывает данные, преобразует слова в векторы,
+сохраняет на диск.
+функции из prepare_data:
+
+prepare_corpora: разделить текст на предложения, убрать
+   небуквенные символы.
+
+get_dict: возвращает словарь слов из *.v файла
+   {'м': ['мама','мыла', ...], ...}
+
+read_word_and_its_vec: считывает слова из *.v файла
+
+
+
+
+TO KNOW:
+
+1. http://datascientist.one/tipichnye-oshibki-ispolzovaniya-neuralnetworks/ ошибки при использовании нс
+
+2. https://habrahabr.ru/company/meanotek/blog/256593/ описание на
+русском
+
+3. https://arxiv.org/pdf/1408.5882v2.pdf оригинальная работа (en)
+
+4. https://habrahabr.ru/company/wunderfund/blog/314872/ о сверт.
+нейронной сети (см. макропараметры)
+
+*TODO:
+1. bag of words
+
+2. Отдельно узнать, можно ли дополнить существующую база word2vec
+новыми словами (т.к. всё-таки лексика от темы к теме отличается).
+(да, см. статьи)
+
+3. сверточная нейронная сеть (см. теорию http://ru.datasides.com/code/cnn-convolutional-neural-networks/)
+
+4. удалить все скобочки (в т.ч. вложенные), странные слова (как
+их искать?)
+
+5. https://habrahabr.ru/post/208192/ читать про кодировки в питоне 2-3
