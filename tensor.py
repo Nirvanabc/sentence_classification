@@ -1,6 +1,7 @@
 import tensorflow as tf
 from prepare_data import my_dictionary
 import numpy as np
+from random import shuffle
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
@@ -18,23 +19,22 @@ def bias_variable(shape):
 def conv2d(x, W):
     return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], \
                         padding='SAME')
+
 def max_pool_2x2(x):
     return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
                           strides=[1, 2, 2, 1], padding='SAME')
 
 
-x_bad, x_good, vec_size = result()
-y_bad = np.full(len(x_bad), 0)
-y_good = np.full(len(x_good), 1)
+# bad, good, vec_size = result()
+# data = bad + good
+# shuffle(data)
+
 sent_size = 16
 class_num = 2
 
-x = tf.placeholder(tf.float32, [None, vec_size])
-y_ = tf.placeholder(tf.float32, shape=[None, ker_size])
+x = tf.placeholder(tf.float32, [None, sent_size, vec_size, 1])
+y_ = tf.placeholder(tf.float32, shape=[None, class_num])
   
-# reshape x to a 4d tensor
-x = tf.reshape(x, [-1, sent_size, vec_size, 1])
-
 
 # THE 1 CONV LAYER
 ker_size1 = 2
@@ -45,6 +45,7 @@ out_chan1 = 100
 # conv = [2, 300, 1, 50] 
 W_conv1 = weight_variable([ker_size1, vec_size, \
                            in_chan1, out_chan1])
+
 b_conv1 = bias_variable([out_chan1])
 
 # use h_conv1._shape to see the result shape
@@ -60,6 +61,7 @@ in_chan2 = out_chan1
 out_chan2 = out_chan1 * 2
 W_conv2 = weight_variable([ker_size2, vec_size, \
                            in_chan2, out_chan2])
+
 b_conv2 = bias_variable([out_chan2])
 h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
 h_pool2 = max_pool_2x2(h_conv2)
@@ -73,6 +75,7 @@ in_chan3 = out_chan2
 out_chan3 = out_chan2 * 2
 W_conv3 = weight_variable([ker_size3, vec_size, \
                            in_chan3, out_chan3])
+
 b_conv3 = bias_variable([out_chan3])
 h_conv3 = tf.nn.relu(conv2d(h_pool2, W_conv3) + b_conv3)
 h_pool3 = max_pool_2x2(h_conv3)
@@ -80,11 +83,11 @@ h_pool3 = max_pool_2x2(h_conv3)
 
 # FULLY CONNECTED LAYER
 # x = [2, 38, 200, 400] 
-out_chan_fc = 2500 
+out_chan_fc = 40000
 row = h_pool3.shape[1]
 col = h_pool3.shape[2]
 depth = h_pool3.shape[3]
-in_chan_fc = row * col * depth
+in_chan_fc = (row * col * depth).value
 W_fc1 = weight_variable([in_chan_fc, out_chan_fc])
 b_fc1 = bias_variable([out_chan_fc])
 h_pool3_flat = tf.reshape(h_pool3, [-1, in_chan_fc])
@@ -108,11 +111,11 @@ def train_and_evaluate():
     train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
     correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-
+    batch = data
+    
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-        for i in range(20000):
-            batch = mnist.train.next_batch(50)
+        for i in range(1000):
             if i % 100 == 0:
                 train_accuracy = accuracy.eval(feed_dict={
                     x: batch[0], y_: batch[1], keep_prob: 1.0})
