@@ -11,7 +11,7 @@ def bias_variable(shape):
     initial = tf.constant(0.1, shape=shape)
     return tf.Variable(initial)
 
-
+vec_size = 300
 # W -- фильтр [2,300,1,100], где соотв: кол-во слов для фильтра,
 # длина слова, кол-во каналов, кол-во фильтров.
 # x -- вх. данные [n,15,300,1], где соотв: кол-во предл,
