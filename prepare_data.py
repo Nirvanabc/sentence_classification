@@ -103,21 +103,22 @@ def padd_sent_to_size(sent, vec_size, sent_size):
     return res_sent
 
 
-def padd_corpora_to_size(corpora, vec_size, sent_size):
+def padd_and_label_corpora(corpora, vec_size, sent_size, label):
     res_corpora = []
     for sent in corpora:
-        res_corpora.append(padd_sent_to_size(sent, \
-                                             vec_size, \
-                                             sent_size))
+        res_corpora.append([padd_sent_to_size(sent,         \
+                                              vec_size,     \
+                                              sent_size)] + \
+                           [label])
     return res_corpora
 
 
 def del_empty(corpora):
-    corpora = list(filter(lambda x: x!=[], corpora))
+    return list(filter(lambda x: x!=[], corpora))
 
 
 def prepare_corpora(file_name, dictionary, vec_size, \
-                    sent_size):
+                    sent_size, label):
     with open(file_name, 'rb') as f:
         corpora = pickle.load(f)
         f.close()
@@ -125,10 +126,10 @@ def prepare_corpora(file_name, dictionary, vec_size, \
     vec_dictionary = corpora2vec(corpora, dictionary, \
                                  vec_size)
     vec_dictionary = padd_corpora_to_size(vec_dictionary, \
-                                          vec_size, sent_size)
+                                          vec_size,       \
+                                          sent_size,      \
+                                          label)
     return vec_dictionary
-
-
 
 
 def my_dictionary():
@@ -136,6 +137,8 @@ def my_dictionary():
     bad and good (text) are stored in files
     '''
     sent_size = 16
+    label_bad = 0
+    label_good = 1
     ru_dict_source = 'softlink_ru'
     en_dict_source = 'softlink_en'
     dict_ready = 'dictionary-ru'
@@ -146,14 +149,15 @@ def my_dictionary():
     vec_dictionary_bad = prepare_corpora(ready_bad,  \
                                          dictionary, \
                                          vec_size,   \
-                                         sent_size)
+                                         sent_size,  \
+                                         label_bad)
     vec_dictionary_good = prepare_corpora(ready_good, \
                                           dictionary, \
                                           vec_size,   \
-                                          sent_size)
+                                          sent_size,  \
+                                          label_good)
     
-    return vec_dictionary_bad, \
-        vec_dictionary_good, vec_size
+    return vec_dictionary_bad, vec_dictionary_good, vec_size
 
 
 #     corpora_bad = 'corpora_bad'
