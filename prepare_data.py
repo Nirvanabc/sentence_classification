@@ -112,11 +112,16 @@ def padd_corpora_to_size(corpora, vec_size, sent_size):
     return res_corpora
 
 
+def del_empty(corpora):
+    corpora = list(filter(lambda x: x!=[], corpora))
+
+
 def prepare_corpora(file_name, dictionary, vec_size, \
                     sent_size):
     with open(file_name, 'rb') as f:
         corpora = pickle.load(f)
         f.close()
+    corpora = del_empty(corpora)
     vec_dictionary = corpora2vec(corpora, dictionary, \
                                  vec_size)
     vec_dictionary = padd_corpora_to_size(vec_dictionary, \
@@ -136,7 +141,7 @@ def my_dictionary():
     dict_ready = 'dictionary-ru'
     ready_bad = 'ready_bad'
     ready_good = 'ready_good'
-    
+
     dictionary, vec_size = get_dict(ru_dict_source)
     vec_dictionary_bad = prepare_corpora(ready_bad,  \
                                          dictionary, \
