@@ -125,10 +125,10 @@ def prepare_corpora(file_name, dictionary, vec_size, \
     corpora = del_empty(corpora)
     vec_dictionary = corpora2vec(corpora, dictionary, \
                                  vec_size)
-    vec_dictionary = padd_corpora_to_size(vec_dictionary, \
-                                          vec_size,       \
-                                          sent_size,      \
-                                          label)
+    vec_dictionary = padd_and_label_corpora(vec_dictionary, \
+                                            vec_size,       \
+                                            sent_size,      \
+                                            label)
     return vec_dictionary
 
 
