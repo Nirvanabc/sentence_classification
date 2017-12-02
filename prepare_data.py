@@ -118,10 +118,12 @@ def prepare_corpora(file_name, dictionary, vec_size, \
         corpora = pickle.load(f)
         f.close()
     vec_dictionary = corpora2vec(corpora, dictionary, \
-                                     vec_size)
+                                 vec_size)
     vec_dictionary = padd_corpora_to_size(vec_dictionary, \
                                           vec_size, sent_size)
     return vec_dictionary
+
+
 
 
 def my_dictionary():
@@ -132,8 +134,8 @@ def my_dictionary():
     ru_dict_source = 'softlink_ru'
     en_dict_source = 'softlink_en'
     dict_ready = 'dictionary-ru'
-    file_ready_bad = 'ready_bad'
-    file_ready_good = 'ready_good'
+    ready_bad = 'ready_bad'
+    ready_good = 'ready_good'
     
     dictionary, vec_size = get_dict(ru_dict_source)
     vec_dictionary_bad = prepare_corpora(ready_bad,  \
