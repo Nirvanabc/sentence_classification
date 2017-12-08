@@ -43,11 +43,13 @@ bad, good, vec_size = my_dictionary()
 data = bad + good
 shuffle(data)
 
-x = tf.placeholder(tf.float32, [None, sent_size, vec_size, 1])
+
+x = tf.placeholder(tf.float32, [None, sent_size, vec_size])
 y_ = tf.placeholder(tf.float32, shape=[None, class_num])
 
 # reshape data to a 4d tensor
 x_tensor = tf.reshape(x, [-1, sent_size, vec_size, 1])
+
 
 # THE 1 CONV LAYER
 # x = [n, 16, 300, 1]
@@ -109,6 +111,7 @@ correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 batch_x = [i[0] for i in data]
 batch_y = [i[1] for i in data]
+batch_y = tf.one_hot(batch_y, depth = class_num)
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
