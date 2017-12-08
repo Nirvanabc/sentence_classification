@@ -111,7 +111,8 @@ correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 batch_x = [i[0] for i in data]
 batch_y = [i[1] for i in data]
-batch_y = tf.one_hot(batch_y, depth = class_num)
+# batch_y = tf.one_hot(batch_y, depth = class_num)
+batch_y = [[1-i, i] for i in batch_y]
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
@@ -124,4 +125,3 @@ with tf.Session() as sess:
             
     print('test accuracy %g' % accuracy.eval(feed_dict={
         x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
-                
