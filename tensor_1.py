@@ -1,7 +1,9 @@
 import tensorflow as tf
-from prepare_data import my_dictionary
+# from prepare_data import my_dictionary
+from test_preproc import my_dictionary
 import numpy as np
 from random import shuffle
+print ("!!!!")
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
@@ -11,7 +13,7 @@ def bias_variable(shape):
     initial = tf.constant(0.1, shape=shape)
     return tf.Variable(initial)
 
-vec_size = 300
+# vec_size = 300
 # W -- фильтр [2,300,1,100], где соотв: кол-во слов для фильтра,
 # длина слова, кол-во каналов, кол-во фильтров.
 # x -- вх. данные [n,15,300,1], где соотв: кол-во предл,
@@ -25,68 +27,58 @@ def max_pool_2x2(x):
                           strides=[1, 2, 2, 1], padding='SAME')
 
 
-# bad, good, vec_size = result()
-# data = bad + good
-# shuffle(data)
-# reshape x to a 4d tensor
-# x = tf.reshape(x, [-1, sent_size, vec_size, 1])
+def conv_layer(x, ker_size, in_chan, out_chan):
+    W_conv = weight_variable([ker_size, vec_size, \
+                              in_chan, out_chan])
 
+    b_conv = bias_variable([out_chan])
+    h_conv = tf.nn.relu(conv2d(x, W_conv) + b_conv)
+    h_pool = max_pool_2x2(h_conv)
+    return h_pool
 
 sent_size = 16
 class_num = 2
 
+bad, good, vec_size = my_dictionary()
+data = bad + good
+shuffle(data)
+
 x = tf.placeholder(tf.float32, [None, sent_size, vec_size, 1])
 y_ = tf.placeholder(tf.float32, shape=[None, class_num])
-  
+
+# reshape data to a 4d tensor
+x_tensor = tf.reshape(x, [-1, sent_size, vec_size, 1])
 
 # THE 1 CONV LAYER
+# x = [n, 16, 300, 1]
+# conv = [2, 300, 1, 50] => x = [n, 8, 150, 50]
 ker_size1 = 2
 in_chan1 = 1
-out_chan1 = 100
-
-# x = [16, 300, 1]
-# conv = [2, 300, 1, 50] 
-W_conv1 = weight_variable([ker_size1, vec_size, \
-                           in_chan1, out_chan1])
-
-b_conv1 = bias_variable([out_chan1])
-
-# use h_conv1._shape to see the result shape
-h_conv1 = tf.nn.relu(conv2d(x, W_conv1) + b_conv1)
-h_pool1 = max_pool_2x2(h_conv1)
+out_chan1 = 50
+h_pool1 = conv_layer(x_tensor, ker_size1, in_chan1, out_chan1)
 
 
 # THE 2 CONV LAYER
-# x = [8, 150, 50]
-# conv = [3, 150, 50, 100]
+# x = [n, 8, 150, 50]
+# conv = [3, 150, 50, 100] => x = [n, 4, 75, 100]
 ker_size2 = 3
 in_chan2 = out_chan1
 out_chan2 = out_chan1 * 2
-W_conv2 = weight_variable([ker_size2, vec_size, \
-                           in_chan2, out_chan2])
-
-b_conv2 = bias_variable([out_chan2])
-h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
-h_pool2 = max_pool_2x2(h_conv2)
+h_pool2 = conv_layer(h_pool1, ker_size2, in_chan2, out_chan2)
 
 
 # THE 3 CONV LAYER
-# x = [4, 75, 100]
-# conv = [4, 75, 100, 200] 
+# x = [n, 4, 75, 100]
+# conv = [4, 75, 100, 200] => x = [n, 2, 38, 200] 
 ker_size3 = 4
 in_chan3 = out_chan2
 out_chan3 = out_chan2 * 2
-W_conv3 = weight_variable([ker_size3, vec_size, \
-                           in_chan3, out_chan3])
-
-b_conv3 = bias_variable([out_chan3])
-h_conv3 = tf.nn.relu(conv2d(h_pool2, W_conv3) + b_conv3)
-h_pool3 = max_pool_2x2(h_conv3)
+h_pool3 = conv_layer(h_pool2, ker_size3, in_chan3, out_chan3)
 
 
 # FULLY CONNECTED LAYER
-# x = [2, 38, 200, 400] 
-out_chan_fc = 40000
+# x = [n, 2, 38, 200]
+out_chan_fc = 4000
 row = h_pool3.shape[1]
 col = h_pool3.shape[2]
 depth = h_pool3.shape[3]
