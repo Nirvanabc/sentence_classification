@@ -59,7 +59,7 @@ def prepare_corpora(file_name, vec_size, \
         corpora = pickle.load(f)
         f.close()
     corpora = del_empty(corpora)
-    corpora = corpora[:100]
+    corpora = corpora[:200]
     vec_dictionary = corpora2vec(corpora, vec_size)
     vec_dictionary = padd_and_label_corpora(vec_dictionary, \
                                             vec_size,       \
@@ -94,5 +94,6 @@ def my_dictionary():
     vec_dictionary_good = prepare_corpora(good,    \
                                           vec_size, sent_size, \
                                           label_good)
-    
-    return vec_dictionary_bad, vec_dictionary_good, vec_size
+    data = vec_dictionary_good + vec_dictionary_bad
+    shuffle(data)
+    return data, vec_size
