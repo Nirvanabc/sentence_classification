@@ -1,3 +1,4 @@
+from sklearn.model_selection import train_test_split
 import tensorflow as tf
 # from prepare_data import my_dictionary
 from test_preproc import my_dictionary
@@ -40,13 +41,13 @@ class_num = 2
 
 data, vec_size = my_dictionary()
 
+
 x = tf.placeholder(tf.float32, [None, sent_size, vec_size])
 y_ = tf.placeholder(tf.float32, shape=[None, class_num])
 
 # reshape data to a 4d tensor
 x_tensor = tf.reshape(x, [-1, sent_size, vec_size, 1])
 
-print(x_tensor)
 
 # THE 1 CONV LAYER
 # x = [n, 16, 300, 1]
@@ -55,7 +56,6 @@ ker_size1 = 2
 in_chan1 = 1
 out_chan1 = 50
 h_pool1 = conv_layer(x_tensor, ker_size1, in_chan1, out_chan1)
-print(h_pool1)
 
 # # THE 2 CONV LAYER
 # # x = [n, 8, 150, 50]
@@ -64,7 +64,6 @@ print(h_pool1)
 # in_chan2 = out_chan1
 # out_chan2 = out_chan1 * 2
 # h_pool2 = conv_layer(h_pool1, ker_size2, in_chan2, out_chan2)
-# print(h_pool2)
 # 
 # # THE 3 CONV LAYER
 # # x = [n, 4, 75, 100]
@@ -73,7 +72,6 @@ print(h_pool1)
 # in_chan3 = out_chan2
 # out_chan3 = out_chan2 * 2
 # h_pool3 = conv_layer(h_pool2, ker_size3, in_chan3, out_chan3)
-# print(h_pool3)
 
 # FULLY CONNECTED LAYER
 # x = [n, 2, 38, 200]
@@ -86,8 +84,7 @@ W_fc1 = weight_variable([in_chan_fc, out_chan_fc])
 b_fc1 = bias_variable([out_chan_fc])
 h_pool3_flat = tf.reshape(h_pool1, [-1, in_chan_fc])
 h_fc1 = tf.nn.relu(tf.matmul(h_pool3_flat, W_fc1) + b_fc1)
-print(h_pool3_flat)
-print(h_fc1)
+
 
 # DROPOUT
 keep_prob = tf.placeholder(tf.float32)
@@ -99,7 +96,6 @@ W_fc2 = weight_variable([out_chan_fc, class_num])
 b_fc2 = bias_variable([class_num])
 
 y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
-print(y_conv)
 
 # def train_and_evaluate():
 cross_entropy = tf.reduce_mean(
@@ -114,11 +110,13 @@ batch_y = [[1-i, i] for i in batch_y]
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for i in range(1000):
+        x_train, x_test, y_train, y_test = train_test_split(batch_x, \
+                                                            batch_y)
         if i % 100 == 0:
             train_accuracy = accuracy.eval(feed_dict={
-                x: batch_x, y_: batch_y, keep_prob: 1.0})
+                x: x_test, y_: y_test, keep_prob: 1.0})
             print('step %d, training accuracy %g' % (i, train_accuracy))
-        train_step.run(feed_dict={x: batch_x, y_: batch_y, keep_prob: 0.5})
+        train_step.run(feed_dict={x: x_train, y_: y_train, keep_prob: 0.5})
             
     print('test accuracy %g' % accuracy.eval(feed_dict={
         x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
