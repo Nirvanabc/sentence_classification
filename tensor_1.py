@@ -41,7 +41,6 @@ class_num = 2
 
 data, vec_size = my_dictionary()
 
-
 x = tf.placeholder(tf.float32, [None, sent_size, vec_size])
 y_ = tf.placeholder(tf.float32, shape=[None, class_num])
 
@@ -118,5 +117,6 @@ with tf.Session() as sess:
             print('step %d, training accuracy %g' % (i, train_accuracy))
         train_step.run(feed_dict={x: x_train, y_: y_train, keep_prob: 0.5})
             
-    print('test accuracy %g' % accuracy.eval(feed_dict={
-        x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+#     print('test accuracy %g' % accuracy.eval(feed_dict={
+#         x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+

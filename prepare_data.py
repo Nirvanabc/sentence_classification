@@ -1,6 +1,3 @@
-# works 3 min for eng, 18 for rus (on leplop)
-# and 5 min on rus on Dima's computer (use ssh)
-
 import struct
 from nltk.tokenize import sent_tokenize
 import re
