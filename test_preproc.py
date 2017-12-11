@@ -6,6 +6,40 @@ from numpy.random import normal
 from random import shuffle
 import pickle
 
+def read_word_and_its_vec(opened_file, vec_len):
+    try:
+        char = opened_file.read(1)
+        word = b''
+        while char != b' ':
+            word += char
+            char = opened_file.read(1)
+        vec = np.empty(vec_len)
+        for i in range(vec_len):
+            num = struct.unpack('f', opened_file.read(4))
+            vec[i] = num[0]
+        char = opened_file.read(1)
+        word = word.decode()
+    finally:
+        return word, vec
+
+
+def get_dict(dict_file):
+    '''
+    returns a dict of all words, words 2-3 min for eng
+    and 17-19 min for rus
+    '''
+    my_dict = open(dict_file, 'rb')
+    line = my_dict.readline()
+    line = line.split()
+    row = int(line[0])
+    col = int(line[1])
+    result_dict = {}
+    for _ in range(row):
+        word, vec = read_word_and_its_vec(my_dict, col)
+        result_dict[word] = vec
+    return result_dict, col
+
+
 def normalize(vec):
     total = sum(vec)
     return list(map(lambda x: x/total, vec))

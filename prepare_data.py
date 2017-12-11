@@ -46,24 +46,24 @@ def get_dict(dict_file):
     return result_dict, col
 
 
-def prepare_corpora(file_name):
-    '''
-    returns such data: [['трезво', 'мыслящие'], ['я']]
-    for a given corpora
-    '''
-    with open(file_name, 'rb') as f:
-        corpora = pickle.load(f)
-    result = []
-    for review in corpora:
-        for i in sent_tokenize(review):
-            text = re.sub('\!caret_return\!', '', i).lower()
-            text = re.sub('\W', ' ', text)
-            text = re.sub(' +', ' ', text)
-            # text = m.lemmatize(text)
-            # text = list(filter(lambda x: x != ' \n' and \
-            #                              x != ' ', text))
-            result.append(text.split())
-    return result
+# def prepare_corpora(file_name):
+#     '''
+#     returns such data: [['трезво', 'мыслящие'], ['я']]
+#     for a given corpora
+#     '''
+#     with open(file_name, 'rb') as f:
+#         corpora = pickle.load(f)
+#     result = []
+#     for review in corpora:
+#         for i in sent_tokenize(review):
+#             text = re.sub('\!caret_return\!', '', i).lower()
+#             text = re.sub('\W', ' ', text)
+#             text = re.sub(' +', ' ', text)
+#             # text = m.lemmatize(text)
+#             # text = list(filter(lambda x: x != ' \n' and \
+#             #                              x != ' ', text))
+#             result.append(text.split())
+#     return result
 
 
 def store_data(data, file_to_store):
