@@ -1,11 +1,8 @@
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
-from test_preproc import my_dictionary2 # 2,5 Gb of words
-from test_preproc import next_batch
+from test_preproc import *
 import numpy as np
 # from random import shuffle
-
-corpora = open('corpora_text', 'r')
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
@@ -38,6 +35,11 @@ def conv_layer(x, ker_size, in_chan, out_chan):
     h_pool = max_pool_2x2(h_conv)
     return h_pool
 
+
+
+
+
+corpora = open('corpora_text', 'r')
 sent_size = 16
 class_num = 2
 
@@ -103,12 +105,12 @@ train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-batch = next_batch(corpora, 50)
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for i in range(1000):
-        if i % 100 == 0:
+        batch = next_batch(corpora, 50)
+        if i % 30 == 0:
             train_accuracy = accuracy.eval(feed_dict={
                 x: batch[0], y_: batch[1], keep_prob: 1.0})
             print('step %d, training accuracy %g' % (i, train_accuracy))
