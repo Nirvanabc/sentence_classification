@@ -58,9 +58,9 @@ def corpora2vec(corpora, vec_size):
     for sent in corpora:
         curr = []
         for word in sent:
-            curr.append(word2vec(word, vec_size))
+            # curr.append(word2vec(word, vec_size))
             # to test without softlink_ru
-            # curr.append(normalize(normal(size = vec_size)))
+            curr.append(normalize(normal(size = vec_size)))
         result.append(curr)
     return result
 
