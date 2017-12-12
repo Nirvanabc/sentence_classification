@@ -1,9 +1,11 @@
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
-# from prepare_data import my_dictionary
-from test_preproc import my_dictionary
+from test_preproc import my_dictionary2 # 2,5 Gb of words
+from test_preproc import next_batch
 import numpy as np
-from random import shuffle
+# from random import shuffle
+
+corpora = open('corpora_text', 'r')
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
@@ -16,7 +18,7 @@ def bias_variable(shape):
 # vec_size = 300
 # W -- фильтр [2,300,1,100], где соотв: кол-во слов для фильтра,
 # длина слова, кол-во каналов, кол-во фильтров.
-# x -- вх. данные [n,15,300,1], где соотв: кол-во предл,
+# x -- вх. данные [n,16,300,1], где соотв: кол-во предл,
 # число слов в предл, длина слова, каналы
 def conv2d(x, W):
     return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], \
@@ -38,8 +40,6 @@ def conv_layer(x, ker_size, in_chan, out_chan):
 
 sent_size = 16
 class_num = 2
-
-data, vec_size = my_dictionary()
 
 x = tf.placeholder(tf.float32, [None, sent_size, vec_size])
 y_ = tf.placeholder(tf.float32, shape=[None, class_num])
@@ -102,20 +102,17 @@ cross_entropy = tf.reduce_mean(
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-batch_x = [i[0] for i in data]
-batch_y = [i[1] for i in data]
-batch_y = [[1-i, i] for i in batch_y]
+
+batch = next_batch(corpora, 50)
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for i in range(1000):
-        x_train, x_test, y_train, y_test = train_test_split(batch_x, \
-                                                            batch_y)
         if i % 100 == 0:
             train_accuracy = accuracy.eval(feed_dict={
-                x: x_test, y_: y_test, keep_prob: 1.0})
+                x: batch[0], y_: batch[1], keep_prob: 1.0})
             print('step %d, training accuracy %g' % (i, train_accuracy))
-        train_step.run(feed_dict={x: x_train, y_: y_train, keep_prob: 0.5})
+        train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
             
 #     print('test accuracy %g' % accuracy.eval(feed_dict={
 #         x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))

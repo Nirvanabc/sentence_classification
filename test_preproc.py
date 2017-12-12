@@ -73,13 +73,12 @@ def padd_sent_to_size(sent, vec_size, sent_size):
     return res_sent
 
 
-def padd_and_label_corpora(corpora, vec_size, sent_size, label):
+def padd_and_label_corpora(corpora, vec_size, sent_size):
     res_corpora = []
     for sent in corpora:
-        res_corpora.append([padd_sent_to_size(sent,         \
+        res_corpora.append(padd_sent_to_size(sent,         \
                                               vec_size,     \
-                                              sent_size)] + \
-                           [label])
+                                              sent_size))
     return res_corpora
 
 
@@ -87,19 +86,15 @@ def del_empty(corpora):
     return list(filter(lambda x: x!=[], corpora))
 
 
-def prepare_corpora(file_name, dictionary, vec_size, \
-                    sent_size, label):
-    with open(file_name, 'rb') as f:
-        corpora = pickle.load(f)
-        f.close()
-    corpora = del_empty(corpora)
-    corpora = corpora[:2000]
+def prepare_corpora(corpora, dictionary, vec_size, \
+                    sent_size):
+    '''
+    takes a batch and prepare it
+    '''
     vec_dictionary = corpora2vec(corpora, dictionary,  vec_size)
     vec_dictionary = padd_and_label_corpora(vec_dictionary, \
                                             vec_size,       \
-                                            sent_size,      \
-                                            label)
-    shuffle(vec_dictionary)
+                                            sent_size)
     return vec_dictionary    
 
 
@@ -132,3 +127,27 @@ def my_dictionary():
     data = vec_dictionary_good + vec_dictionary_bad
     shuffle(data)
     return data, vec_size
+
+
+def next_batch(corpora, n):
+    batch = []
+    i = 0
+    for _ in range(n):
+        sent = corpora.readline()
+        if len(sent) == 0:
+            return 0
+        sent = sent.split()
+        label = int(sent[-1])
+        sent = [sent[:-1], [1-label, label]]
+        batch.append(sent)
+    batch = prepare_corpora(batch, dictionary, \
+                            vec_size, sent_size)
+    return batch
+
+
+def my_dictionary2(batch_size):
+    # vec_size = 300
+    sent_size = 16
+    ru_dict_source = 'softlink_ru'
+    en_dict_source = 'softlink_en'
+    dictionary, vec_size = get_dict(ru_dict_source)
