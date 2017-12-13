@@ -144,7 +144,8 @@ def next_batch(corpora, n):
         labels.append(int(sent[-1]))
         batch.append(sent[:-1])
     batch = prepare_corpora(batch, vec_size, sent_size)
-    labels = [[1-labels[i], labels[i]] for i in len(labels)]
+    labels = [[1-labels[i], \
+               labels[i]] for i in range(len(labels))]
     batch = [batch, labels]
 #     batch = [[batch[i], [1-labels[i], \
 #                          labels[i]]] for i in range(len(labels))]
@@ -152,8 +153,7 @@ def next_batch(corpora, n):
 
 
 
-def my_dictionary():
-    ru_dict_source = 'softlink_ru'
-    # en_dict_source = 'softlink_en'
-    dictionary, vec_size = get_dict(ru_dict_source)
-    return dictionary
+ru_dict_source = 'softlink_ru'
+# en_dict_source = 'softlink_en'
+dictionary, vec_size = get_dict(ru_dict_source)
+    
