@@ -1,6 +1,6 @@
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
-from test_preproc import *
+from prepare_data import *
 import numpy as np
 # from random import shuffle
 

@@ -35,6 +35,7 @@ def get_dict(dict_file):
     for _ in range(row):
         word, vec = read_word_and_its_vec(my_dict, col)
         result_dict[word] = vec
+    my_dict.close()
     return result_dict, col
 
 
@@ -143,11 +144,12 @@ def next_batch(corpora, n):
         labels.append(int(sent[-1]))
         batch.append(sent[:-1])
     batch = prepare_corpora(batch, vec_size, sent_size)
-    batch = [[batch[i], [1-labels[i], \
-                         labels[i]]] for i in range(len(labels))]
+    batch = [batch, labels]
+#     batch = [[batch[i], [1-labels[i], \
+#                          labels[i]]] for i in range(len(labels))]
     return batch
 
 
 ru_dict_source = 'softlink_ru'
 # en_dict_source = 'softlink_en'
-dictionary, vec_size = get_dict(ru_dict_source)
+# dictionary, vec_size = get_dict(ru_dict_source)
