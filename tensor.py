@@ -58,32 +58,32 @@ in_chan1 = 1
 out_chan1 = 50
 h_pool1 = conv_layer(x_tensor, ker_size1, in_chan1, out_chan1)
 
-# # THE 2 CONV LAYER
-# # x = [n, 8, 150, 50]
-# # conv = [3, 150, 50, 100] => x = [n, 4, 75, 100]
-# ker_size2 = 3
-# in_chan2 = out_chan1
-# out_chan2 = out_chan1 * 2
-# h_pool2 = conv_layer(h_pool1, ker_size2, in_chan2, out_chan2)
-# 
-# # THE 3 CONV LAYER
-# # x = [n, 4, 75, 100]
-# # conv = [4, 75, 100, 200] => x = [n, 2, 38, 200] 
-# ker_size3 = 4
-# in_chan3 = out_chan2
-# out_chan3 = out_chan2 * 2
-# h_pool3 = conv_layer(h_pool2, ker_size3, in_chan3, out_chan3)
+# THE 2 CONV LAYER
+# x = [n, 8, 150, 50]
+# conv = [3, 150, 50, 100] => x = [n, 4, 75, 100]
+ker_size2 = 3
+in_chan2 = out_chan1
+out_chan2 = out_chan1 * 2
+h_pool2 = conv_layer(h_pool1, ker_size2, in_chan2, out_chan2)
+
+# THE 3 CONV LAYER
+# x = [n, 4, 75, 100]
+# conv = [4, 75, 100, 200] => x = [n, 2, 38, 200] 
+ker_size3 = 4
+in_chan3 = out_chan2
+out_chan3 = out_chan2 * 2
+h_pool3 = conv_layer(h_pool2, ker_size3, in_chan3, out_chan3)
 
 # FULLY CONNECTED LAYER
 # x = [n, 2, 38, 200]
 out_chan_fc = 500
-row = h_pool1.shape[1]
-col = h_pool1.shape[2]
-depth = h_pool1.shape[3]
+row = h_pool3.shape[1]
+col = h_pool3.shape[2]
+depth = h_pool3.shape[3]
 in_chan_fc = (row * col * depth).value
 W_fc1 = weight_variable([in_chan_fc, out_chan_fc])
 b_fc1 = bias_variable([out_chan_fc])
-h_pool3_flat = tf.reshape(h_pool1, [-1, in_chan_fc])
+h_pool3_flat = tf.reshape(h_pool3, [-1, in_chan_fc])
 h_fc1 = tf.nn.relu(tf.matmul(h_pool3_flat, W_fc1) + b_fc1)
 
 
