@@ -4,6 +4,11 @@ from prepare_data import *
 import numpy as np
 # from random import shuffle
 
+corpora = open('corpora_text', 'r')
+sent_size = 16
+class_num = 2
+vec_size = 300
+
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
     return tf.Variable(initial)
@@ -37,12 +42,6 @@ def conv_layer(x, ker_size, in_chan, out_chan):
 
 
 
-
-
-corpora = open('corpora_text', 'r')
-sent_size = 16
-class_num = 2
-vec_size
 
 x = tf.placeholder(tf.float32, [None, sent_size, vec_size])
 y_ = tf.placeholder(tf.float32, shape=[None, class_num])

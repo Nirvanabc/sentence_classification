@@ -59,9 +59,9 @@ def corpora2vec(corpora, vec_size):
     for sent in corpora:
         curr = []
         for word in sent:
-            # curr.append(word2vec(word, vec_size))
+            curr.append(word2vec(word, vec_size))
             # to test without softlink_ru
-            curr.append(normalize(normal(size = vec_size)))
+            # curr.append(normalize(normal(size = vec_size)))
         result.append(curr)
     return result
 
@@ -151,6 +151,9 @@ def next_batch(corpora, n):
     return batch
 
 
-ru_dict_source = 'softlink_ru'
-# en_dict_source = 'softlink_en'
-# dictionary, vec_size = get_dict(ru_dict_source)
+
+def my_dictionary():
+    ru_dict_source = 'softlink_ru'
+    # en_dict_source = 'softlink_en'
+    dictionary, vec_size = get_dict(ru_dict_source)
+    return dictionary
