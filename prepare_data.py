@@ -24,8 +24,6 @@ def read_word_and_its_vec(opened_file, vec_len):
 
 
 def get_dict(dict_file):
-    '''
-    '''
     my_dict = open(dict_file, 'rb')
     line = my_dict.readline()
     line = line.split()
@@ -147,13 +145,9 @@ def next_batch(corpora, n):
     labels = [[1-labels[i], \
                labels[i]] for i in range(len(labels))]
     batch = [batch, labels]
-#     batch = [[batch[i], [1-labels[i], \
-#                          labels[i]]] for i in range(len(labels))]
     return batch
 
 
-
 ru_dict_source = 'softlink_ru'
-# en_dict_source = 'softlink_en'
-dictionary, vec_size = get_dict(ru_dict_source)
-    
+en_dict_source = 'softlink_en'
+dictionary, vec_size = get_dict(en_dict_source)

@@ -30,14 +30,42 @@ def shuffle_data(file_bad, file_good, file_to):
                 new_data.write(str(word))
                 new_data.write(" ")
             new_data.write("\n")
-    
-    return data
 
+
+def shuffle_text_data(file_bad, file_good, file_to):
+    label_bad = 0
+    label_good = 1
+    res_file = open(file_to, 'w')
+    bad = open(file_bad)
+    good = open(file_good)
+    result_bad = read_and_label_corpora(bad, label_bad)
+    result_good = read_and_label_corpora(good, label_good)
+    result = result_bad + result_good
+    shuffle(result)
+    for i in result:
+        res_file.write(i[0][:-1])
+        res_file.write(" ")
+        res_file.write(str(i[1]))
+        res_file.write("\n")
+    res_file.close()
+    bad.close()
+    good.close()
+    
+
+def read_and_label_corpora(corpora, label):
+    result = []
+    while True:
+        sent = corpora.readline()
+        if sent == '':
+            break
+        sent = [sent] + [label]
+        result.append(sent)
+    return result
+        
 
 def make_corpora():
-    bad = 'ready_bad'
-    good = 'ready_good'
-    corpora = 'corpora_text'
+    bad = 'badMR.txt'
+    good = 'goodMR.txt'
+    corpora = 'corpora_text_MR'
     
-    shuffle_data(bad, good, corpora)
-    
+    shuffle_text_data(bad, good, corpora)
