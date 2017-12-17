@@ -4,7 +4,7 @@ from prepare_data import *
 import numpy as np
 # from random import shuffle
 
-corpora = open('corpora_text', 'r')
+corpora = open('corpora_text_tmp', 'r')
 sent_size = 16
 class_num = 2
 vec_size = 300
@@ -55,7 +55,7 @@ x_tensor = tf.reshape(x, [-1, sent_size, vec_size, 1])
 # conv = [2, 300, 1, 50] => x = [n, 8, 150, 50]
 ker_size1 = 2
 in_chan1 = 1
-out_chan1 = 50
+out_chan1 = 30
 h_pool1 = conv_layer(x_tensor, ker_size1, in_chan1, out_chan1)
 
 # THE 2 CONV LAYER
@@ -110,7 +110,7 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for i in range(1000):
         batch = next_batch(corpora, 50)
-        if i % 30 == 0:
+        if i % 10 == 0:
             train_accuracy = accuracy.eval(feed_dict={
                 x: batch[0], y_: batch[1], keep_prob: 1.0})
             print('step %d, training accuracy %g' % (i, train_accuracy))
