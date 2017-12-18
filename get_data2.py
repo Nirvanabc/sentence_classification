@@ -64,8 +64,8 @@ def read_and_label_corpora(corpora, label):
         
 
 def make_corpora():
-    bad = 'badMR.txt'
-    good = 'goodMR.txt'
-    corpora = 'corpora_text_MR'
+    bad = 'neg_MR'
+    good = 'pos_MR'
+    corpora = 'corpora_MR'
     
     shuffle_text_data(bad, good, corpora)

@@ -109,7 +109,8 @@ train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-corpora = open('corpora_text_MR', 'r')
+corpora_file = 'corpora_MR'
+corpora = open(corpora_file, 'r')
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
@@ -117,7 +118,7 @@ with tf.Session() as sess:
         batch = next_batch(corpora, 50, vec_size)
         if batch == 0:
             corpora.close()
-            corpora = open('corpora_text_MR', 'r')
+            corpora = open(corpora_file 'r')
             batch = next_batch(corpora, 10)
         if i % 10 == 0:
             train_accuracy = accuracy.eval(feed_dict={
