@@ -6,7 +6,7 @@ import numpy as np
 
 sent_size = 16
 class_num = 2
-vec_size = 300
+vec_size = 100
 
 # ru_dict_source = 'softlink_ru'
 # en_dict_source = 'softlink_en'
@@ -109,15 +109,15 @@ train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-corpora = open('corpora_text_tmp', 'r')
+corpora = open('corpora_text_MR', 'r')
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for i in range(1000):
-        batch = next_batch(corpora, 10)
+        batch = next_batch(corpora, 50)
         if batch == 0:
             corpora.close()
-            corpora = open('corpora_text_tmp', 'r')
+            corpora = open('corpora_text_MR', 'r')
             batch = next_batch(corpora, 10)
         if i % 10 == 0:
             train_accuracy = accuracy.eval(feed_dict={

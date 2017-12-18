@@ -150,4 +150,4 @@ def next_batch(corpora, n):
 
 ru_dict_source = 'softlink_ru'
 en_dict_source = 'softlink_en'
-dictionary, vec_size = get_dict(ru_dict_source)
+dictionary, vec_size = get_dict(en_dict_source)
