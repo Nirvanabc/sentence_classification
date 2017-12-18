@@ -114,7 +114,7 @@ corpora = open('corpora_text_MR', 'r')
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for i in range(1000):
-        batch = next_batch(corpora, 50)
+        batch = next_batch(corpora, 50, vec_size)
         if batch == 0:
             corpora.close()
             corpora = open('corpora_text_MR', 'r')

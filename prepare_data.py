@@ -128,8 +128,8 @@ def store_data(data, file_to_store):
 #     return data, vec_size
 
 
-def next_batch(corpora, n):
-    vec_size = 300
+def next_batch(corpora, n, vec_size):
+    # vec_size = 300
     sent_size = 16
     batch = []
     labels = []
