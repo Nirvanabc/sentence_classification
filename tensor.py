@@ -4,10 +4,14 @@ from prepare_data import *
 import numpy as np
 # from random import shuffle
 
-corpora = open('corpora_text_tmp', 'r')
 sent_size = 16
 class_num = 2
 vec_size = 300
+
+ru_dict_source = 'softlink_ru'
+en_dict_source = 'softlink_en'
+dictionary, vec_size = get_dict(en_dict_source)
+
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
@@ -105,11 +109,15 @@ train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
+corpora = open('corpora_text_tmp', 'r')
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for i in range(1000):
-        batch = next_batch(corpora, 50)
+        batch = next_batch(corpora, 10)
+        if batch == '':
+            corpora.close()
+            corpora = open('corpora_text_tmp', 'r')
         if i % 10 == 0:
             train_accuracy = accuracy.eval(feed_dict={
                 x: batch[0], y_: batch[1], keep_prob: 1.0})
