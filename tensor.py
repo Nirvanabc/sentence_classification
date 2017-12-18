@@ -8,9 +8,9 @@ sent_size = 16
 class_num = 2
 vec_size = 300
 
-ru_dict_source = 'softlink_ru'
-en_dict_source = 'softlink_en'
-dictionary, vec_size = get_dict(en_dict_source)
+# ru_dict_source = 'softlink_ru'
+# en_dict_source = 'softlink_en'
+# dictionary, vec_size = get_dict(ru_dict_source)
 
 
 def weight_variable(shape):
@@ -115,9 +115,10 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for i in range(1000):
         batch = next_batch(corpora, 10)
-        if batch == '':
+        if batch == 0:
             corpora.close()
             corpora = open('corpora_text_tmp', 'r')
+            batch = next_batch(corpora, 10)
         if i % 10 == 0:
             train_accuracy = accuracy.eval(feed_dict={
                 x: batch[0], y_: batch[1], keep_prob: 1.0})
