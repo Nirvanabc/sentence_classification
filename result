@@ -1,0 +1,54 @@
+1
+на rutracker отзывах. 15 559 предложений.
+3 слоя:
+ker_size1 = 2
+in_chan1 = 1
+out_chan1 = 30
+
+ker_size2 = 3
+out_chan2 = 60
+
+ker_size3 = 4
+out_chan3 = 120
+
+полносвязный:
+out_chan_fc = 500
+
+лучший результат 68, сходимость не наблюдается
+
+step 0, training accuracy 0.42
+step 10, training accuracy 0.54
+step 20, training accuracy 0.52
+step 30, training accuracy 0.54
+step 40, training accuracy 0.48
+step 50, training accuracy 0.48
+step 60, training accuracy 0.48
+step 70, training accuracy 0.44
+step 80, training accuracy 0.56
+step 90, training accuracy 0.46
+step 100, training accuracy 0.56
+step 110, training accuracy 0.48
+step 120, training accuracy 0.44
+step 130, training accuracy 0.54
+step 140, training accuracy 0.68
+step 150, training accuracy 0.54
+step 160, training accuracy 0.42
+step 170, training accuracy 0.6
+step 180, training accuracy 0.62
+step 190, training accuracy 0.56
+step 200, training accuracy 0.6
+step 210, training accuracy 0.48
+step 220, training accuracy 0.64
+step 230, training accuracy 0.64
+step 240, training accuracy 0.5
+step 250, training accuracy 0.46
+
+2
+тестовый набор из 22 предложений с 3-мя слоями
+step 0, training accuracy 0.4
+step 10, training accuracy 0.9
+step 20, training accuracy 1
+step 30, training accuracy 1
+step 40, training accuracy 1
+step 50, training accuracy 1
+step 60, training accuracy 1
