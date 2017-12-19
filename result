@@ -55,37 +55,19 @@ step 50, training accuracy 1
 step 60, training accuracy 1
 
 
+
+3
 10 961 предложений английских.
 работает ещё хуже:
-
-step 0, training accuracy 0.42
-step 30, training accuracy 0.4
-step 60, training accuracy 0.58
-step 90, training accuracy 0.38
-step 120, training accuracy 0.58
-step 150, training accuracy 0.5
-step 180, training accuracy 0.56
-step 210, training accuracy 0.64
-
-о, след. запуск дал:
-step 0, training accuracy 0.42
-step 30, training accuracy 0.42
-step 60, training accuracy 0.64
-step 90, training accuracy 0.48
-step 120, training accuracy 0.62
-step 150, training accuracy 0.7
-step 180, training accuracy 0.52
-step 210, training accuracy 0.62
-step 240, training accuracy 0.66
-step 270, training accuracy 0.42
-step 300, training accuracy 0.54
+0-300 <= 70%
 330-600 <= 62
 step 630, training accuracy 0.68
 step 660, training accuracy 0.68
 690-990 <= 62
 
 
-Новые параметры при англ. предл.: 80% !
+4
+Новые слои при англ. предл.: 80% !
 out_chan1 = 60
 out_chan2 = 120
 out_chan3 = 240
@@ -108,3 +90,26 @@ step 420, training accuracy 0.48
 step 450, training accuracy 0.8   !!!!!
 step 480, training accuracy 0.42   =(
 step 510, training accuracy 0.5
+
+
+
+5
+Ещё одна версия: 76% !
+out_chan1 = 150
+out_chan_fc = 1000
+
+Может, в чём-то лучше предыдущей:
+1. обучалась менее 15 мин
+2. всего один св. слой
+3. более стабильный результат (от 58% до 76%)
+step 690, training accuracy 0.62
+step 720, training accuracy 0.68
+step 750, training accuracy 0.74
+step 780, training accuracy 0.6
+step 810, training accuracy 0.58
+step 840, training accuracy 0.62
+step 870, training accuracy 0.6
+step 900, training accuracy 0.64
+step 930, training accuracy 0.68
+step 960, training accuracy 0.76
+step 990, training accuracy 0.7

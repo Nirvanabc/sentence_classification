@@ -59,24 +59,24 @@ x_tensor = tf.reshape(x, [-1, sent_size, vec_size, 1])
 # conv = [2, 300, 1, 50] => x = [n, 8, 150, 50]
 ker_size1 = 2
 in_chan1 = 1
-out_chan1 = 60
-h_pool1 = conv_layer(x_tensor, ker_size1, in_chan1, out_chan1)
+out_chan1 = 150
+h_pool3 = conv_layer(x_tensor, ker_size1, in_chan1, out_chan1)
 
-# THE 2 CONV LAYER
-# x = [n, 8, 150, 50]
-# conv = [3, 150, 50, 100] => x = [n, 4, 75, 100]
-ker_size2 = 3
-in_chan2 = out_chan1
-out_chan2 = out_chan1 * 2
-h_pool2 = conv_layer(h_pool1, ker_size2, in_chan2, out_chan2)
-
-# THE 3 CONV LAYER
-# x = [n, 4, 75, 100]
-# conv = [4, 75, 100, 200] => x = [n, 2, 38, 200] 
-ker_size3 = 4
-in_chan3 = out_chan2
-out_chan3 = out_chan2 * 2
-h_pool3 = conv_layer(h_pool2, ker_size3, in_chan3, out_chan3)
+# # THE 2 CONV LAYER
+# # x = [n, 8, 150, 50]
+# # conv = [3, 150, 50, 100] => x = [n, 4, 75, 100]
+# ker_size2 = 3
+# in_chan2 = out_chan1
+# out_chan2 = out_chan1 * 2
+# h_pool2 = conv_layer(h_pool1, ker_size2, in_chan2, out_chan2)
+# 
+# # THE 3 CONV LAYER
+# # x = [n, 4, 75, 100]
+# # conv = [4, 75, 100, 200] => x = [n, 2, 38, 200] 
+# ker_size3 = 4
+# in_chan3 = out_chan2
+# out_chan3 = out_chan2 * 2
+# h_pool3 = conv_layer(h_pool2, ker_size3, in_chan3, out_chan3)
 
 # FULLY CONNECTED LAYER
 # x = [n, 2, 38, 200]
