@@ -69,7 +69,7 @@ h_pool3 = conv_layer(x_tensor, ker_size1, in_chan1, out_chan1)
 # in_chan2 = out_chan1
 # out_chan2 = out_chan1 * 2
 # h_pool2 = conv_layer(h_pool1, ker_size2, in_chan2, out_chan2)
-
+# 
 # # THE 3 CONV LAYER
 # # x = [n, 4, 75, 100]
 # # conv = [4, 75, 100, 200] => x = [n, 2, 38, 200] 
