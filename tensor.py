@@ -59,28 +59,28 @@ x_tensor = tf.reshape(x, [-1, sent_size, vec_size, 1])
 # conv = [2, 300, 1, 50] => x = [n, 8, 150, 50]
 ker_size1 = 2
 in_chan1 = 1
-out_chan1 = 30
-h_pool1 = conv_layer(x_tensor, ker_size1, in_chan1, out_chan1)
+out_chan1 = 150
+h_pool3 = conv_layer(x_tensor, ker_size1, in_chan1, out_chan1)
 
-# THE 2 CONV LAYER
-# x = [n, 8, 150, 50]
-# conv = [3, 150, 50, 100] => x = [n, 4, 75, 100]
-ker_size2 = 3
-in_chan2 = out_chan1
-out_chan2 = out_chan1 * 2
-h_pool2 = conv_layer(h_pool1, ker_size2, in_chan2, out_chan2)
+# # THE 2 CONV LAYER
+# # x = [n, 8, 150, 50]
+# # conv = [3, 150, 50, 100] => x = [n, 4, 75, 100]
+# ker_size2 = 3
+# in_chan2 = out_chan1
+# out_chan2 = out_chan1 * 2
+# h_pool2 = conv_layer(h_pool1, ker_size2, in_chan2, out_chan2)
 
-# THE 3 CONV LAYER
-# x = [n, 4, 75, 100]
-# conv = [4, 75, 100, 200] => x = [n, 2, 38, 200] 
-ker_size3 = 4
-in_chan3 = out_chan2
-out_chan3 = out_chan2 * 2
-h_pool3 = conv_layer(h_pool2, ker_size3, in_chan3, out_chan3)
-
+# # THE 3 CONV LAYER
+# # x = [n, 4, 75, 100]
+# # conv = [4, 75, 100, 200] => x = [n, 2, 38, 200] 
+# ker_size3 = 4
+# in_chan3 = out_chan2
+# out_chan3 = out_chan2 * 2
+# h_pool3 = conv_layer(h_pool2, ker_size3, in_chan3, out_chan3)
+# 
 # FULLY CONNECTED LAYER
 # x = [n, 2, 38, 200]
-out_chan_fc = 500
+out_chan_fc = 1000
 row = h_pool3.shape[1]
 col = h_pool3.shape[2]
 depth = h_pool3.shape[3]
@@ -118,9 +118,9 @@ with tf.Session() as sess:
         batch = next_batch(corpora, 50, vec_size)
         if batch == 0:
             corpora.close()
-            corpora = open(corpora_file 'r')
-            batch = next_batch(corpora, 10)
-        if i % 10 == 0:
+            corpora = open(corpora_file, 'r')
+            batch = next_batch(corpora, 50, vec_size)
+        if i % 30 == 0:
             train_accuracy = accuracy.eval(feed_dict={
                 x: batch[0], y_: batch[1], keep_prob: 1.0})
             print('step %d, training accuracy %g' % (i, train_accuracy))
