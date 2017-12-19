@@ -43,6 +43,7 @@ step 230, training accuracy 0.64
 step 240, training accuracy 0.5
 step 250, training accuracy 0.46
 
+
 2
 тестовый набор из 22 предложений с 3-мя слоями
 step 0, training accuracy 0.4
@@ -52,3 +53,58 @@ step 30, training accuracy 1
 step 40, training accuracy 1
 step 50, training accuracy 1
 step 60, training accuracy 1
+
+
+10 961 предложений английских.
+работает ещё хуже:
+
+step 0, training accuracy 0.42
+step 30, training accuracy 0.4
+step 60, training accuracy 0.58
+step 90, training accuracy 0.38
+step 120, training accuracy 0.58
+step 150, training accuracy 0.5
+step 180, training accuracy 0.56
+step 210, training accuracy 0.64
+
+о, след. запуск дал:
+step 0, training accuracy 0.42
+step 30, training accuracy 0.42
+step 60, training accuracy 0.64
+step 90, training accuracy 0.48
+step 120, training accuracy 0.62
+step 150, training accuracy 0.7
+step 180, training accuracy 0.52
+step 210, training accuracy 0.62
+step 240, training accuracy 0.66
+step 270, training accuracy 0.42
+step 300, training accuracy 0.54
+330-600 <= 62
+step 630, training accuracy 0.68
+step 660, training accuracy 0.68
+690-990 <= 62
+
+
+Новые параметры при англ. предл.: 80% !
+out_chan1 = 60
+out_chan2 = 120
+out_chan3 = 240
+out_chan_fc = 1000
+step 0, training accuracy 0.52
+step 30, training accuracy 0.6
+step 60, training accuracy 0.6
+step 90, training accuracy 0.66
+step 120, training accuracy 0.52
+step 150, training accuracy 0.7
+step 180, training accuracy 0.66
+step 210, training accuracy 0.58
+step 240, training accuracy 0.66
+step 270, training accuracy 0.64
+step 300, training accuracy 0.56
+step 330, training accuracy 0.68
+step 360, training accuracy 0.68
+step 390, training accuracy 0.68
+step 420, training accuracy 0.48
+step 450, training accuracy 0.8   !!!!!
+step 480, training accuracy 0.42   =(
+step 510, training accuracy 0.5

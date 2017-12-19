@@ -59,7 +59,7 @@ x_tensor = tf.reshape(x, [-1, sent_size, vec_size, 1])
 # conv = [2, 300, 1, 50] => x = [n, 8, 150, 50]
 ker_size1 = 2
 in_chan1 = 1
-out_chan1 = 30
+out_chan1 = 60
 h_pool1 = conv_layer(x_tensor, ker_size1, in_chan1, out_chan1)
 
 # THE 2 CONV LAYER
@@ -80,7 +80,7 @@ h_pool3 = conv_layer(h_pool2, ker_size3, in_chan3, out_chan3)
 
 # FULLY CONNECTED LAYER
 # x = [n, 2, 38, 200]
-out_chan_fc = 500
+out_chan_fc = 100
 row = h_pool3.shape[1]
 col = h_pool3.shape[2]
 depth = h_pool3.shape[3]
