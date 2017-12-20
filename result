@@ -90,7 +90,7 @@ out_chan1 = 150
 out_chan_fc = 1000
 
 Может, в чём-то лучше предыдущей:
-1. обучалась менее 15 мин
+1. обучалась гораздо быстрее!
 2. всего один св. слой
 3. тот же результат
 step 0, training accuracy 0.58
@@ -113,6 +113,36 @@ step 480, training accuracy 0.8    !!!
 step 510, training accuracy 0.64
 step 540, training accuracy 0.58
 step 570, training accuracy 0.58
+step 1020, training accuracy 0.68
+step 1050, training accuracy 0.64
+step 1080, training accuracy 0.68
+step 1110, training accuracy 0.7
+step 1140, training accuracy 0.76
+step 1170, training accuracy 0.74
+step 1200, training accuracy 0.6
+step 1230, training accuracy 0.76
+step 1260, training accuracy 0.74
+step 1290, training accuracy 0.64
+step 1320, training accuracy 0.72
+step 1350, training accuracy 0.76
+step 1380, training accuracy 0.72
+step 1410, training accuracy 0.68
+step 1440, training accuracy 0.78
+step 1470, training accuracy 0.76
+step 1500, training accuracy 0.76
+step 1530, training accuracy 0.72
+step 1560, training accuracy 0.78
+step 1590, training accuracy 0.8
+step 1620, training accuracy 0.64
+step 1650, training accuracy 0.8
+step 1680, training accuracy 0.74
+step 1710, training accuracy 0.78
+step 1740, training accuracy 0.78
+step 1770, training accuracy 0.74
+step 1800, training accuracy 0.7
+step 1830, training accuracy 0.7
+step 1860, training accuracy 0.78
+step 1890, training accuracy 0.74
 
 
 русские данные совершенно не годятся. считаю 72%

@@ -1,15 +1,7 @@
 get_data.py скачивает данные с кинопоиска.
+
 prepare_data.py обрабатывает данные, преобразует слова в векторы,
 сохраняет на диск.
-функции из prepare_data:
-
-prepare_corpora: разделить текст на предложения, убрать
-   небуквенные символы.
-
-get_dict: возвращает словарь слов из *.v файла
-   {'м': ['мама','мыла', ...], ...}
-
-read_word_and_its_vec: считывает слова из *.v файла
 
 
 
@@ -26,6 +18,17 @@ TO KNOW:
 4. https://habrahabr.ru/company/wunderfund/blog/314872/ о сверт.
 нейронной сети (см. макропараметры)
 
+5. https://habrahabr.ru/company/microsoft/blog/314934/ почитать
+
+6. http://ru.datasides.com/code/cnn-convolutional-neural-networks/ очень хорошая статья,
+подробно рассказано откуда какие цифры берутся.
+
+7. http://cv-tricks.com/tensorflow-tutorial/save-restore-tensorflow-models-quick-complete-tutorial/
+
+8. https://stackoverflow.com/questions/33759623/tensorflow-how-to-save-restore-a-model и
+https://stackoverflow.com/questions/46582546/what-is-the-real-use-of-savedmodelbuilder-add-meta-graph-in-tensorflow --
+как сохранить и восстановить сеть
+
 *TODO:
 1. bag of words
 
@@ -33,9 +36,8 @@ TO KNOW:
 новыми словами (т.к. всё-таки лексика от темы к теме отличается).
 (да, см. статьи)
 
-3. сверточная нейронная сеть (см. теорию http://ru.datasides.com/code/cnn-convolutional-neural-networks/)
+3. https://habrahabr.ru/post/208192/ читать про кодировки в питоне 2-3
 
-4. удалить все скобочки (в т.ч. вложенные), странные слова (как
-их искать?)
+4. сохранить сеть
 
-5. https://habrahabr.ru/post/208192/ читать про кодировки в питоне 2-3
+5. интерактивное взаимодействие с сетью
