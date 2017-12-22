@@ -47,8 +47,10 @@ def conv_layer(x, ker_size, in_chan, out_chan):
 
 
 
-x = tf.placeholder(tf.float32, [None, sent_size, vec_size], name='x')
-y_ = tf.placeholder(tf.float32, shape=[None, class_num], name='y_')
+x = tf.placeholder(tf.float32, \
+                   [None, sent_size, vec_size], name='x')
+y_ = tf.placeholder(tf.float32, \
+                    shape=[None, class_num], name='y_')
 
 # reshape data to a 4d tensor
 x_tensor = tf.reshape(x, [-1, sent_size, vec_size, 1])
@@ -107,15 +109,17 @@ cross_entropy = tf.reduce_mean(
     tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y_conv))
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name = 'accuracy')
 
 corpora_file = 'corpora_MR'
 corpora = open(corpora_file, 'r')
+model_data = './saved/my_model'
+
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     saver = tf.train.Saver()
-    for i in range(1000):
+    for i in range(3000):
         batch = next_batch(corpora, 50, vec_size)
         if batch == 0:
             corpora.close()
@@ -125,9 +129,9 @@ with tf.Session() as sess:
             train_accuracy = accuracy.eval(feed_dict={
                 x: batch[0], y_: batch[1], keep_prob: 1.0})
             print('step %d, training accuracy %g' % (i, train_accuracy))
-            saver.save(sess, "model.ckpt", global_step=i)
-        train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
+        if i % 80 == 0:
+            saver.save(sess, model_data, global_step=i)
+        train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.6}) # name='train_step')
             
 #     print('test accuracy %g' % accuracy.eval(feed_dict={
 #         x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
-
