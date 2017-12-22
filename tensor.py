@@ -47,8 +47,8 @@ def conv_layer(x, ker_size, in_chan, out_chan):
 
 
 
-x = tf.placeholder(tf.float32, [None, sent_size, vec_size])
-y_ = tf.placeholder(tf.float32, shape=[None, class_num])
+x = tf.placeholder(tf.float32, [None, sent_size, vec_size], name='x')
+y_ = tf.placeholder(tf.float32, shape=[None, class_num], name='y_')
 
 # reshape data to a 4d tensor
 x_tensor = tf.reshape(x, [-1, sent_size, vec_size, 1])
@@ -92,7 +92,7 @@ h_fc1 = tf.nn.relu(tf.matmul(h_pool3_flat, W_fc1) + b_fc1)
 
 
 # DROPOUT
-keep_prob = tf.placeholder(tf.float32)
+keep_prob = tf.placeholder(tf.float32, name='keep_prob')
 h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 
 
