@@ -5,6 +5,7 @@ import numpy as np
 from numpy.random import normal
 from random import shuffle
 import pickle
+from constants import *
 
 def read_word_and_its_vec(opened_file, vec_len):
     try:
@@ -106,31 +107,8 @@ def store_data(data, file_to_store):
     pickle.dump(data, f)
     f.close()
 
-    
-# def my_dictionary():
-#     vec_size = 300
-#     sent_size = 16
-#     bad = 'ready_bad'
-#     good = 'ready_good'
-#     label_bad = 0
-#     label_good = 1
-#     ru_dict_source = 'softlink_ru'
-#     en_dict_source = 'softlink_en'
-#     dictionary, vec_size = get_dict(ru_dict_source)
-#     vec_dictionary_bad = prepare_corpora(bad, dictionary,     \
-#                                          vec_size, sent_size, \
-#                                          label_bad)
-#     vec_dictionary_good = prepare_corpora(good, dictionary,    \
-#                                           vec_size, sent_size, \
-#                                           label_good)
-#     data = vec_dictionary_good + vec_dictionary_bad
-#     shuffle(data)
-#     return data, vec_size
-
 
 def next_batch(corpora, n, vec_size):
-    # vec_size = 300
-    sent_size = 16
     batch = []
     labels = []
     i = 0
@@ -148,6 +126,4 @@ def next_batch(corpora, n, vec_size):
     return batch
 
 
-ru_dict_source = 'softlink_ru'
-en_dict_source = 'softlink_en'
 dictionary, vec_size = get_dict(en_dict_source)

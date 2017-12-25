@@ -1,8 +1,5 @@
-'''
-stores pickle data in txt format
-'''
-
 import pickle
+from constants import *
 from random import shuffle
 
 def label_corpora(corpora, label):
@@ -10,9 +7,18 @@ def label_corpora(corpora, label):
         sent.append(label)
 
 
+def read_and_label_corpora(corpora, label):
+    result = []
+    while True:
+        sent = corpora.readline()
+        if sent == '':
+            break
+        sent = [sent] + [label]
+        result.append(sent)
+    return result
+
+
 def shuffle_data(file_bad, file_good, file_to):
-    label_bad = 0
-    label_good = 1
     res_file = open(file_to, 'w')
     with open(file_bad, 'rb') as f:
         bad = pickle.load(f)
@@ -33,8 +39,6 @@ def shuffle_data(file_bad, file_good, file_to):
 
 
 def shuffle_text_data(file_bad, file_good, file_to):
-    label_bad = 0
-    label_good = 1
     res_file = open(file_to, 'w')
     bad = open(file_bad)
     good = open(file_good)
@@ -51,16 +55,6 @@ def shuffle_text_data(file_bad, file_good, file_to):
     bad.close()
     good.close()
     
-
-def read_and_label_corpora(corpora, label):
-    result = []
-    while True:
-        sent = corpora.readline()
-        if sent == '':
-            break
-        sent = [sent] + [label]
-        result.append(sent)
-    return result
         
 
 def make_corpora():

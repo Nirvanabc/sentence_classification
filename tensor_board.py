@@ -1,10 +1,9 @@
 # from sklearn.model_selection import train_test_split
 import tensorflow as tf
 import numpy as np
+from constants import *
 
-sent_size = 16
 class_num = 2
-vec_size = 100
 
 def weight_variable(shape, name):
     initial = tf.truncated_normal(shape, stddev=0.1)

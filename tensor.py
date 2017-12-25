@@ -2,16 +2,9 @@ from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from prepare_data import *
 import numpy as np
-# from random import shuffle
+from constants import *
 
-sent_size = 16
 class_num = 2
-vec_size = 100
-
-# ru_dict_source = 'softlink_ru'
-# en_dict_source = 'softlink_en'
-# dictionary, vec_size = get_dict(ru_dict_source)
-
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
@@ -21,7 +14,6 @@ def bias_variable(shape):
     initial = tf.constant(0.1, shape=shape)
     return tf.Variable(initial)
 
-# vec_size = 300
 # W -- фильтр [2,300,1,100], где соотв: кол-во слов для фильтра,
 # длина слова, кол-во каналов, кол-во фильтров.
 # x -- вх. данные [n,16,300,1], где соотв: кол-во предл,
@@ -131,7 +123,7 @@ with tf.Session() as sess:
             print('step %d, training accuracy %g' % (i, train_accuracy))
         if i % 80 == 0:
             saver.save(sess, model_data, global_step=i)
-        train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.6}) # name='train_step')
+        train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.6})
             
 #     print('test accuracy %g' % accuracy.eval(feed_dict={
 #         x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
