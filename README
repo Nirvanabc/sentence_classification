@@ -20,6 +20,8 @@ prepare_data.py -- имеет два назначеня: 1. считывает �
 
 tensor.py -- 
 
+prepared_dict -- словарь тональности 0=отриц, 1=нейтр, 2=полож
+
 *TODO:
 1. bag of words
 
@@ -29,11 +31,6 @@ tensor.py --
 
 3. https://habrahabr.ru/post/208192/ читать про кодировки
 в питоне 2-3
-
-4. сохранить сеть
-
-5. интерактивное взаимодействие с сетью
-
 
 
 
@@ -60,3 +57,10 @@ TO KNOW:
 https://stackoverflow.com/questions/46582546/what-is-the-real-use-of-savedmodelbuilder-add-meta-graph-in-tensorflow --
 как сохранить и восстановить сеть
 
+Для NLTK
+9. когда захочешь работать с наивным классификатором
+https://streamhacker.com/2010/05/10/text-classification-sentiment-analysis-naive-bayes-classifier/
+и
+http://text-processing.com/demo/sentiment/
+и ещё
+http://www.laurentluce.com/posts/twitter-sentiment-analysis-using-python-and-nltk/
