@@ -57,6 +57,9 @@ TO KNOW:
 https://stackoverflow.com/questions/46582546/what-is-the-real-use-of-savedmodelbuilder-add-meta-graph-in-tensorflow --
 как сохранить и восстановить сеть
 
+9. https://habrahabr.ru/post/305578/
+хорошее описание на русском о tensorflow и tensorboard
+
 Для NLTK
 9. когда захочешь работать с наивным классификатором
 https://streamhacker.com/2010/05/10/text-classification-sentiment-analysis-naive-bayes-classifier/
