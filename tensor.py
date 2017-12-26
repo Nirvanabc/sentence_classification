@@ -109,7 +109,7 @@ merged = tf.summary.merge_all()
 corpora_file = 'corpora_MR'
 corpora = open(corpora_file, 'r')
 model_data = './saved/my_model'
-new_batch = next_batch(corpora, 2000, vec_size)
+# new_batch = next_batch(corpora, 2000, vec_size)
 
 with tf.Session() as sess:
     train_writer = tf.summary.FileWriter("output/train", sess.graph)
