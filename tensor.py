@@ -53,25 +53,25 @@ x_tensor = tf.reshape(x, [-1, sent_size, vec_size, 1])
 # conv = [2, 300, 1, 50] => x = [n, 8, 150, 50]
 ker_size1 = 2
 in_chan1 = 1
-out_chan1 = 150
-h_pool3 = conv_layer(x_tensor, ker_size1, in_chan1, out_chan1)
+out_chan1 = 60
+h_pool1 = conv_layer(x_tensor, ker_size1, in_chan1, out_chan1)
 
-# # THE 2 CONV LAYER
-# # x = [n, 8, 150, 50]
-# # conv = [3, 150, 50, 100] => x = [n, 4, 75, 100]
-# ker_size2 = 3
-# in_chan2 = out_chan1
-# out_chan2 = out_chan1 * 2
-# h_pool2 = conv_layer(h_pool1, ker_size2, in_chan2, out_chan2)
-# 
-# # THE 3 CONV LAYER
-# # x = [n, 4, 75, 100]
-# # conv = [4, 75, 100, 200] => x = [n, 2, 38, 200] 
-# ker_size3 = 4
-# in_chan3 = out_chan2
-# out_chan3 = out_chan2 * 2
-# h_pool3 = conv_layer(h_pool2, ker_size3, in_chan3, out_chan3)
-# 
+# THE 2 CONV LAYER
+# x = [n, 8, 150, 50]
+# conv = [3, 150, 50, 100] => x = [n, 4, 75, 100]
+ker_size2 = 3
+in_chan2 = out_chan1
+out_chan2 = out_chan1 * 2
+h_pool2 = conv_layer(h_pool1, ker_size2, in_chan2, out_chan2)
+
+# THE 3 CONV LAYER
+# x = [n, 4, 75, 100]
+# conv = [4, 75, 100, 200] => x = [n, 2, 38, 200] 
+ker_size3 = 4
+in_chan3 = out_chan2
+out_chan3 = out_chan2 * 2
+h_pool3 = conv_layer(h_pool2, ker_size3, in_chan3, out_chan3)
+
 # FULLY CONNECTED LAYER
 # x = [n, 2, 38, 200]
 out_chan_fc = 1000
@@ -106,12 +106,15 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name = 'accur
 tf.summary.scalar('accuracy', accuracy)
 merged = tf.summary.merge_all()
 
-corpora_file = 'corpora_MR'
-corpora = open(corpora_file, 'r')
+test_file = 'test_MR'
+train_file = 'train_MR'
+test_corpora = open(test_file, 'r')
+train_corpora = open(train_file, 'r')
 model_data = './saved/my_model'
-# new_batch = next_batch(corpora, 2000, vec_size)
+new_batch = next_batch(test_corpora, 1000, vec_size)
 
-with tf.Session() as sess:
+config = tf.ConfigProto(device_count={'CPU': 4})
+with tf.Session(config=config) as sess:
     train_writer = tf.summary.FileWriter("output/train", sess.graph)
     test_writer = tf.summary.FileWriter("output/test", sess.graph)
     test_new_writer = tf.summary.FileWriter("output/test_new", \
@@ -119,12 +122,15 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     saver = tf.train.Saver()
     for i in range(3000):
-        batch = next_batch(corpora, 50, vec_size)
+        batch = next_batch(train_corpora, 50, vec_size)
         if batch == 0:
-            corpora.close()
-            corpora = open(corpora_file, 'r')
-            batch = next_batch(corpora, 50, vec_size)
-        if i % 10 == 0:
+            train_corpora.close()
+            train_corpora = open(train_file, 'r')
+            batch = next_batch(train_corpora, 50, vec_size)
+        summary, _ = sess.run([merged, train_step], feed_dict={
+            x: batch[0], y_: batch[1], keep_prob: 0.6})
+        if i % 20 == 0:
+            train_writer.add_summary(summary, i)
             summary, acc = sess.run([merged, accuracy], feed_dict={
                 x: batch[0], y_: batch[1], keep_prob: 1.0})
             test_writer.add_summary(summary, i)
@@ -132,9 +138,8 @@ with tf.Session() as sess:
                 x: new_batch[0], y_: new_batch[1], keep_prob: 1.0})
             test_new_writer.add_summary(summary, i)
             print('step %d, training accuracy %g' % (i, acc))
-        # if i % 80 == 0:
-        #     saver.save(sess, model_data, global_step=i)
-        summary, _ = sess.run([merged, train_step], feed_dict={
-            x: batch[0], y_: batch[1], keep_prob: 0.6})
-        train_writer.add_summary(summary, i)
+        if i % 100 == 0:
+            saver.save(sess, model_data, global_step=i)
+        
+            
         
