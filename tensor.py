@@ -71,7 +71,8 @@ h_pool3 = conv_layer(h_pool1, ker_size2, in_chan2, out_chan2)
 # in_chan3 = out_chan2
 # out_chan3 = out_chan2 * 2
 # h_pool3 = conv_layer(h_pool2, ker_size3, in_chan3, out_chan3)
-# 
+
+
 # FULLY CONNECTED LAYER
 # x = [n, 2, 38, 200]
 out_chan_fc = 1000
