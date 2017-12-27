@@ -91,6 +91,7 @@ def prepare_corpora(corpora, vec_size, \
     '''
     takes a batch and prepare it
     '''
+    # corpora = del_empty(corpora)
     vec_dictionary = corpora2vec(corpora, vec_size)
     vec_dictionary = padd_corpora(vec_dictionary, \
                                   vec_size,       \
@@ -111,14 +112,14 @@ def store_data(data, file_to_store):
 def next_batch(corpora, n, vec_size):
     batch = []
     labels = []
-    i = 0
     for _ in range(n):
         sent = corpora.readline()
         if len(sent) == 0:
             return 0
         sent = sent.split()
-        labels.append(int(sent[-1]))
-        batch.append(sent[:-1])
+        if sent[:-1] != []:
+            labels.append(int(sent[-1]))
+            batch.append(sent[:-1])
     batch = prepare_corpora(batch, vec_size, sent_size)
     labels = [[1-labels[i], \
                labels[i]] for i in range(len(labels))]

@@ -53,7 +53,7 @@ x_tensor = tf.reshape(x, [-1, sent_size, vec_size, 1])
 # conv = [2, 300, 1, 50] => x = [n, 8, 150, 50]
 ker_size1 = 2
 in_chan1 = 1
-out_chan1 = 150
+out_chan1 = 200
 h_pool3 = conv_layer(x_tensor, ker_size1, in_chan1, out_chan1)
 
 # # THE 2 CONV LAYER
@@ -106,8 +106,8 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name = 'accur
 tf.summary.scalar('accuracy', accuracy)
 merged = tf.summary.merge_all()
 
-test_file = 'test_MR'
-train_file = 'train_MR'
+test_file = 'new_test_MR'
+train_file = 'new_train_MR'
 test_corpora = open(test_file, 'r')
 train_corpora = open(train_file, 'r')
 model_data = './saved/my_model'

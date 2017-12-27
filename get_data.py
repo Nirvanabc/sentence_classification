@@ -29,7 +29,8 @@ def parse_reviews(url, pages):
         a = a.replace(">", " ")
         a = a.replace("<i", " ")
         a = a.replace("</i", " ")
-        a = a.replace('<span class="_reachbanner_" itemprop="', " ")
+        a = a.replace('<span class="_reachbanner_" itemprop="', \
+                      " ")
         a=a.split('reviewBody')
         a = a[1:]
         corpora += a        
