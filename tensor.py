@@ -3,8 +3,7 @@ import tensorflow as tf
 from prepare_data import *
 import numpy as np
 from constants import *
-
-class_num = 2
+from math import ceil
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
@@ -27,8 +26,8 @@ def max_pool_2x2(x):
                           strides=[1, 2, 2, 1], padding='SAME')
 
 
-def conv_layer(x, ker_size, in_chan, out_chan):
-    W_conv = weight_variable([ker_size, vec_size, \
+def conv_layer(x, ker_height, ker_width, in_chan, out_chan):
+    W_conv = weight_variable([ker_height, ker_width, \
                               in_chan, out_chan])
 
     b_conv = bias_variable([out_chan])
@@ -38,6 +37,8 @@ def conv_layer(x, ker_size, in_chan, out_chan):
 
 
 
+class_num = 2
+input_chan = 1
 
 x = tf.placeholder(tf.float32, \
                    [None, sent_size, vec_size], name='x')
@@ -45,37 +46,43 @@ y_ = tf.placeholder(tf.float32, \
                     shape=[None, class_num], name='y_')
 
 # reshape data to a 4d tensor
-x_tensor = tf.reshape(x, [-1, sent_size, vec_size, 1])
+x_tensor = tf.reshape(x, [-1, sent_size, vec_size, input_chan])
 
 
 # THE 1 CONV LAYER
 # x = [n, 16, 300, 1]
 # conv = [2, 300, 1, 50] => x = [n, 8, 150, 50]
-ker_size1 = 2
-in_chan1 = 1
-out_chan1 = 70
-h_pool1 = conv_layer(x_tensor, ker_size1, in_chan1, out_chan1)
+ker_height1 = 2
+ker_width1 = vec_size
+in_chan1 = input_chan
+out_chan1 = 100
+h_pool1 = conv_layer(x_tensor, ker_height1, \
+                     ker_width1, in_chan1, out_chan1)
 
 # THE 2 CONV LAYER
 # x = [n, 8, 150, 50]
 # conv = [3, 150, 50, 100] => x = [n, 4, 75, 100]
-ker_size2 = 3
+ker_height2 = 3
+ker_width2 = ceil(ker_width1/2)
 in_chan2 = out_chan1
 out_chan2 = out_chan1 * 2
-h_pool3 = conv_layer(h_pool1, ker_size2, in_chan2, out_chan2)
+h_pool3 = conv_layer(h_pool1, ker_height2, \
+                     ker_width2, in_chan2, out_chan2)
 
-# # THE 3 CONV LAYER
-# # x = [n, 4, 75, 100]
-# # conv = [4, 75, 100, 200] => x = [n, 2, 38, 200] 
-# ker_size3 = 4
+# THE 3 CONV LAYER
+# x = [n, 4, 75, 100]
+# conv = [4, 75, 100, 200] => x = [n, 2, 38, 200] 
+# ker_height3 = 4
+# ker_width3 = ceil(ker_width2/2)
 # in_chan3 = out_chan2
 # out_chan3 = out_chan2 * 2
-# h_pool3 = conv_layer(h_pool2, ker_size3, in_chan3, out_chan3)
+# h_pool4 = conv_layer(h_pool3, ker_height3, \
+#                      ker_width3, in_chan3, out_chan3)
 
 
 # FULLY CONNECTED LAYER
 # x = [n, 2, 38, 200]
-out_chan_fc = 1000
+out_chan_fc = 600
 row = h_pool3.shape[1]
 col = h_pool3.shape[2]
 depth = h_pool3.shape[3]
@@ -113,34 +120,33 @@ test_corpora = open(test_file, 'r')
 train_corpora = open(train_file, 'r')
 model_data = './saved/my_model'
 new_batch = next_batch(test_corpora, 1000, vec_size)
+new_batch = next_batch(test_corpora, 1000, vec_size)
 
 # config = tf.ConfigProto(device_count={'CPU': 4})
-with tf.Session() as sess:
-    train_writer = tf.summary.FileWriter("output/train", sess.graph)
-    test_writer = tf.summary.FileWriter("output/test", sess.graph)
-    test_new_writer = tf.summary.FileWriter("output/test_new", \
-                                            sess.graph)
-    sess.run(tf.global_variables_initializer())
-    saver = tf.train.Saver()
-    for i in range(3000):
-        batch = next_batch(train_corpora, 50, vec_size)
-        if batch == 0:
-            train_corpora.close()
-            train_corpora = open(train_file, 'r')
+with tf.device("/cpu:0"):
+    with tf.Session() as sess:
+        train_writer = tf.summary.FileWriter("output/train", sess.graph)
+        test_writer = tf.summary.FileWriter("output/test", sess.graph)
+        test_new_writer = tf.summary.FileWriter("output/test_new", \
+                                                sess.graph)
+        sess.run(tf.global_variables_initializer())
+        saver = tf.train.Saver()
+        for i in range(3000):
             batch = next_batch(train_corpora, 50, vec_size)
-        summary, _ = sess.run([merged, train_step], feed_dict={
-            x: batch[0], y_: batch[1], keep_prob: 0.8})
-        if i % 10 == 0:
-            train_writer.add_summary(summary, i)
-            summary, acc = sess.run([merged, accuracy], feed_dict={
-                x: batch[0], y_: batch[1], keep_prob: 1.0})
-            test_writer.add_summary(summary, i)
-            summary, acc = sess.run([merged, accuracy], feed_dict={
-                x: new_batch[0], y_: new_batch[1], keep_prob: 1.0})
-            test_new_writer.add_summary(summary, i)
-            print('step %d, training accuracy %.2g' % (i, acc))
-        if i % 100 == 0:
-            saver.save(sess, model_data, global_step=i)
-        
-            
-        
+            if batch == 0:
+                train_corpora.close()
+                train_corpora = open(train_file, 'r')
+                batch = next_batch(train_corpora, 50, vec_size)
+            summary, _ = sess.run([merged, train_step], feed_dict={
+                x: batch[0], y_: batch[1], keep_prob: 0.6})
+            if i % 20 == 0:
+                train_writer.add_summary(summary, i)
+                summary, acc = sess.run([merged, accuracy], feed_dict={
+                    x: batch[0], y_: batch[1], keep_prob: 1.0})
+                test_writer.add_summary(summary, i)
+                summary, acc = sess.run([merged, accuracy], feed_dict={
+                    x: new_batch[0], y_: new_batch[1], keep_prob: 1.0})
+                test_new_writer.add_summary(summary, i)
+                print('step %d, training accuracy %.2g' % (i, acc))
+            if i % 100 == 0:
+                saver.save(sess, model_data, global_step=i)
