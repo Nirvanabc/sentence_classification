@@ -123,30 +123,30 @@ new_batch = next_batch(test_corpora, 1000, vec_size)
 new_batch = next_batch(test_corpora, 1000, vec_size)
 
 # config = tf.ConfigProto(device_count={'CPU': 4})
-with tf.device("/cpu:0"):
-    with tf.Session() as sess:
-        train_writer = tf.summary.FileWriter("output/train", sess.graph)
-        test_writer = tf.summary.FileWriter("output/test", sess.graph)
-        test_new_writer = tf.summary.FileWriter("output/test_new", \
-                                                sess.graph)
-        sess.run(tf.global_variables_initializer())
-        saver = tf.train.Saver()
-        for i in range(3000):
+with tf.Session() as sess:
+    train_writer = tf.summary.FileWriter("output/train", \
+                                         sess.graph)
+    test_writer = tf.summary.FileWriter("output/test", \
+                                        sess.graph)
+    test_new_writer = tf.summary.FileWriter("output/test_new", sess.graph)
+    sess.run(tf.global_variables_initializer())
+    saver = tf.train.Saver()
+    for i in range(3000):
+        batch = next_batch(train_corpora, 50, vec_size)
+        if batch == 0:
+            train_corpora.close()
+            train_corpora = open(train_file, 'r')
             batch = next_batch(train_corpora, 50, vec_size)
-            if batch == 0:
-                train_corpora.close()
-                train_corpora = open(train_file, 'r')
-                batch = next_batch(train_corpora, 50, vec_size)
-            summary, _ = sess.run([merged, train_step], feed_dict={
-                x: batch[0], y_: batch[1], keep_prob: 0.6})
-            if i % 20 == 0:
-                train_writer.add_summary(summary, i)
-                summary, acc = sess.run([merged, accuracy], feed_dict={
-                    x: batch[0], y_: batch[1], keep_prob: 1.0})
-                test_writer.add_summary(summary, i)
-                summary, acc = sess.run([merged, accuracy], feed_dict={
-                    x: new_batch[0], y_: new_batch[1], keep_prob: 1.0})
-                test_new_writer.add_summary(summary, i)
-                print('step %d, training accuracy %.2g' % (i, acc))
-            if i % 100 == 0:
-                saver.save(sess, model_data, global_step=i)
+        summary, _ = sess.run([merged, train_step], feed_dict={
+            x: batch[0], y_: batch[1], keep_prob: 0.6})
+        if i % 20 == 0:
+            train_writer.add_summary(summary, i)
+            summary, acc = sess.run([merged, accuracy], feed_dict={
+                x: batch[0], y_: batch[1], keep_prob: 1.0})
+            test_writer.add_summary(summary, i)
+            summary, acc = sess.run([merged, accuracy], feed_dict={
+                x: new_batch[0], y_: new_batch[1], keep_prob: 1.0})
+            test_new_writer.add_summary(summary, i)
+            print('step %d, training accuracy %.2g' % (i, acc))
+        if i % 100 == 0:
+            saver.save(sess, model_data, global_step=i)
