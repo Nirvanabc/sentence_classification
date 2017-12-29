@@ -48,10 +48,11 @@ TO KNOW:
 
 5. https://habrahabr.ru/company/microsoft/blog/314934/ почитать
 
-6. http://ru.datasides.com/code/cnn-convolutional-neural-networks/ очень хорошая статья,
+6. http://ru.datasides.com/code/cnn-convolutional-neural-networks/ очень хорошая статья, на русском
 подробно рассказано откуда какие цифры берутся.
 
 7. http://cv-tricks.com/tensorflow-tutorial/save-restore-tensorflow-models-quick-complete-tutorial/
+tensorboard для визуализации результатов
 
 8. https://stackoverflow.com/questions/33759623/tensorflow-how-to-save-restore-a-model и
 https://stackoverflow.com/questions/46582546/what-is-the-real-use-of-savedmodelbuilder-add-meta-graph-in-tensorflow --
@@ -59,6 +60,10 @@ https://stackoverflow.com/questions/46582546/what-is-the-real-use-of-savedmodelb
 
 9. https://habrahabr.ru/post/305578/
 хорошее описание на русском о tensorflow и tensorboard
+
+10. http://www.wildml.com/2015/11/understanding-convolutional-neural-networks-for-nlp/
+и особенно http://www.wildml.com/2015/12/implementing-a-cnn-for-text-classification-in-tensorflow/ --
+*реализация* статьи YoonKim-а и объяснения что откуда
 
 Для NLTK
 9. когда захочешь работать с наивным классификатором

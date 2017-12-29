@@ -17,24 +17,6 @@ def bias_variable(shape):
 # длина слова, кол-во каналов, кол-во фильтров.
 # x -- вх. данные [n,16,300,1], где соотв: кол-во предл,
 # число слов в предл, длина слова, каналы
-def conv2d(x, W):
-    return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], \
-                        padding='SAME')
-
-def max_pool_2x2(x):
-    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
-                          strides=[1, 2, 2, 1], padding='SAME')
-
-
-def conv_layer(x, ker_height, ker_width, in_chan, out_chan):
-    W_conv = weight_variable([ker_height, ker_width, \
-                              in_chan, out_chan])
-
-    b_conv = bias_variable([out_chan])
-    h_conv = tf.nn.relu(conv2d(x, W_conv) + b_conv)
-    h_pool = max_pool_2x2(h_conv)
-    return h_pool
-
 
 
 class_num = 2
@@ -48,58 +30,40 @@ y_ = tf.placeholder(tf.float32, \
 # reshape data to a 4d tensor
 x_tensor = tf.reshape(x, [-1, sent_size, vec_size, input_chan])
 
-
+filter_sizes = [2,3,4]
+num_filters = 100
 # THE 1 CONV LAYER
 # x = [n, 16, 300, 1]
 # conv = [2, 300, 1, 50] => x = [n, 8, 150, 50]
-ker_height1 = 2
-ker_width1 = vec_size
-in_chan1 = input_chan
-out_chan1 = 100
-h_pool1 = conv_layer(x_tensor, ker_height1, \
-                     ker_width1, in_chan1, out_chan1)
 
-# THE 2 CONV LAYER
-# x = [n, 8, 150, 50]
-# conv = [3, 150, 50, 100] => x = [n, 4, 75, 100]
-ker_height2 = 3
-ker_width2 = ceil(ker_width1/2)
-in_chan2 = out_chan1
-out_chan2 = out_chan1 * 2
-h_pool3 = conv_layer(h_pool1, ker_height2, \
-                     ker_width2, in_chan2, out_chan2)
-
-# THE 3 CONV LAYER
-# x = [n, 4, 75, 100]
-# conv = [4, 75, 100, 200] => x = [n, 2, 38, 200] 
-# ker_height3 = 4
-# ker_width3 = ceil(ker_width2/2)
-# in_chan3 = out_chan2
-# out_chan3 = out_chan2 * 2
-# h_pool4 = conv_layer(h_pool3, ker_height3, \
-#                      ker_width3, in_chan3, out_chan3)
-
-
-# FULLY CONNECTED LAYER
-# x = [n, 2, 38, 200]
-out_chan_fc = 600
-row = h_pool3.shape[1]
-col = h_pool3.shape[2]
-depth = h_pool3.shape[3]
-in_chan_fc = (row * col * depth).value
-W_fc1 = weight_variable([in_chan_fc, out_chan_fc])
-b_fc1 = bias_variable([out_chan_fc])
-h_pool3_flat = tf.reshape(h_pool3, [-1, in_chan_fc])
-h_fc1 = tf.nn.relu(tf.matmul(h_pool3_flat, W_fc1) + b_fc1)
+pooled_outputs = []
+for i, filter_size in enumerate(filter_sizes):
+    W_conv = weight_variable([filter_size, vec_size, \
+                              1, num_filters])
+    b_conv = bias_variable([num_filters])
+    conv = tf.nn.conv2d(x_tensor, W_conv, strides=[1, 1, 1, 1], \
+                        padding="VALID")
+    h = tf.nn.relu(tf.nn.bias_add(conv, b_conv))
+    pooled = tf.nn.max_pool(
+        h,
+        ksize=[1, sent_size - filter_size + 1, 1, 1],
+        strides=[1, 1, 1, 1],
+        padding='VALID')
+    pooled_outputs.append(pooled)
+     
+# Combine all the pooled features
+num_filters_total = num_filters * len(filter_sizes)
+h_pool = tf.concat(pooled_outputs, 3)
+h_pool_flat = tf.reshape(h_pool, [-1, num_filters_total])
 
 
 # DROPOUT
 keep_prob = tf.placeholder(tf.float32, name='keep_prob')
-h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+h_fc1_drop = tf.nn.dropout(h_pool_flat, keep_prob)
 
 
 # READOUT LAYER
-W_fc2 = weight_variable([out_chan_fc, class_num])
+W_fc2 = weight_variable([num_filters_total, class_num])
 b_fc2 = bias_variable([class_num])
 
 y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
@@ -120,10 +84,9 @@ test_corpora = open(test_file, 'r')
 train_corpora = open(train_file, 'r')
 model_data = './saved/my_model'
 new_batch = next_batch(test_corpora, 1000, vec_size)
-new_batch = next_batch(test_corpora, 1000, vec_size)
 
-# config = tf.ConfigProto(device_count={'CPU': 4})
-with tf.Session() as sess:
+config = tf.ConfigProto(device_count={'CPU': 4})
+with tf.Session(config = config) as sess:
     train_writer = tf.summary.FileWriter("output/train", \
                                          sess.graph)
     test_writer = tf.summary.FileWriter("output/test", \
@@ -131,7 +94,7 @@ with tf.Session() as sess:
     test_new_writer = tf.summary.FileWriter("output/test_new", sess.graph)
     sess.run(tf.global_variables_initializer())
     saver = tf.train.Saver()
-    for i in range(3000):
+    for i in range(8000):
         batch = next_batch(train_corpora, 50, vec_size)
         if batch == 0:
             train_corpora.close()
@@ -139,14 +102,15 @@ with tf.Session() as sess:
             batch = next_batch(train_corpora, 50, vec_size)
         summary, _ = sess.run([merged, train_step], feed_dict={
             x: batch[0], y_: batch[1], keep_prob: 0.6})
-        if i % 20 == 0:
+        if i % 40 == 0:
             train_writer.add_summary(summary, i)
-            summary, acc = sess.run([merged, accuracy], feed_dict={
+            summary, acc_old = sess.run([merged, accuracy], feed_dict={
                 x: batch[0], y_: batch[1], keep_prob: 1.0})
             test_writer.add_summary(summary, i)
-            summary, acc = sess.run([merged, accuracy], feed_dict={
+            summary, acc_new = sess.run([merged, accuracy], feed_dict={
                 x: new_batch[0], y_: new_batch[1], keep_prob: 1.0})
             test_new_writer.add_summary(summary, i)
-            print('step %d, training accuracy %.2g' % (i, acc))
-        if i % 100 == 0:
+            print('step %d, acc on old %.2f, on new %.2f' % (i, acc_old, \
+                                                             acc_new))
+        if i % 500 == 0:
             saver.save(sess, model_data, global_step=i)
