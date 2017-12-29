@@ -22,6 +22,8 @@ def bias_variable(shape):
 class_num = 2
 input_chan = 1
 
+l2_reg_loss = tf.constant(0.0)
+
 x = tf.placeholder(tf.float32, \
                    [None, sent_size, vec_size], name='x')
 y_ = tf.placeholder(tf.float32, \
@@ -101,8 +103,8 @@ with tf.Session(config = config) as sess:
             train_corpora = open(train_file, 'r')
             batch = next_batch(train_corpora, 50, vec_size)
         summary, _ = sess.run([merged, train_step], feed_dict={
-            x: batch[0], y_: batch[1], keep_prob: 0.6})
-        if i % 100 == 0:
+            x: batch[0], y_: batch[1], keep_prob: 0.8})
+        if i % 50 == 0:
             train_writer.add_summary(summary, i)
             summary, acc_old = sess.run([merged, accuracy], feed_dict={
                 x: batch[0], y_: batch[1], keep_prob: 1.0})
