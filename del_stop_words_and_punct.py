@@ -9,11 +9,11 @@ def del_punct_and_stopwords(sent):
         if not letter in string.punctuation:
             tmp_result += letter
     tmp_result = tmp_result.split()
-    return tmp_result
-#     for word in tmp_result:
-#         if not word in stop_words.ENGLISH_STOP_WORDS:
-#             result.append(word)
-#     return result
+#     return tmp_result
+    for word in tmp_result:
+        if not word in stop_words.ENGLISH_STOP_WORDS:
+            result.append(word)
+    return result
 
 
 def clear_corpora(corpora_from, corpora_to):

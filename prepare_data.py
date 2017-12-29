@@ -1,5 +1,5 @@
 import struct
-from nltk.tokenize import sent_tokenize
+# from nltk.tokenize import sent_tokenize
 import re
 import numpy as np
 from numpy.random import normal

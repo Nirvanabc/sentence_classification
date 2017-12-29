@@ -31,7 +31,7 @@ y_ = tf.placeholder(tf.float32, \
 x_tensor = tf.reshape(x, [-1, sent_size, vec_size, input_chan])
 
 filter_sizes = [2,3,4]
-num_filters = 200
+num_filters = 100
 # THE 1 CONV LAYER
 # x = [n, 16, 300, 1]
 # conv = [2, 300, 1, 50] => x = [n, 8, 150, 50]
@@ -94,7 +94,7 @@ with tf.Session(config = config) as sess:
     test_new_writer = tf.summary.FileWriter("output/test_new", sess.graph)
     sess.run(tf.global_variables_initializer())
     saver = tf.train.Saver()
-    for i in range(8500):
+    for i in range(8000):
         batch = next_batch(train_corpora, 50, vec_size)
         if batch == 0:
             train_corpora.close()
