@@ -22,9 +22,6 @@ def bias_variable(shape):
 class_num = 2
 input_chan = 1
 
-l2_reg_loss = tf.constant(0.0)
-l2_reg_lambda = 4
-
 x = tf.placeholder(tf.float32, \
                    [None, sent_size, vec_size], name='x')
 y_ = tf.placeholder(tf.float32, \
@@ -69,15 +66,12 @@ h_fc1_drop = tf.nn.dropout(h_pool_flat, keep_prob)
 W_fc2 = weight_variable([num_filters_total, class_num])
 b_fc2 = bias_variable([class_num])
 
-l2_reg_loss += tf.nn.l2_loss(W_fc2)
-l2_reg_loss += tf.nn.l2_loss(b_fc2)
 
 y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
 
 # def train_and_evaluate():
 cross_entropy = tf.reduce_mean(
-    tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y_conv)) + \
-    l2_reg_lambda * l2_reg_loss
+    tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y_conv))
 tf.summary.scalar('cross_entropy', cross_entropy)
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
@@ -91,10 +85,8 @@ test_corpora = open(test_file, 'r')
 train_corpora = open(train_file, 'r')
 model_data = './saved/my_model'
 new_batch = next_batch(test_corpora, 1000, vec_size)
-new_batch = next_batch(test_corpora, 1000, vec_size)
 
-config = tf.ConfigProto(device_count={'CPU': 4})
-with tf.Session(config = config) as sess:
+with tf.Session() as sess:
     train_writer = tf.summary.FileWriter("output/train", \
                                          sess.graph)
     test_writer = tf.summary.FileWriter("output/test", \
