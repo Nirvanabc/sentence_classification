@@ -13,15 +13,6 @@ def bias_variable(shape):
     initial = tf.constant(0.1, shape=shape)
     return tf.Variable(initial)
 
-# W -- фильтр [2,300,1,100], где соотв: кол-во слов для фильтра,
-# длина слова, кол-во каналов, кол-во фильтров.
-# x -- вх. данные [n,16,300,1], где соотв: кол-во предл,
-# число слов в предл, длина слова, каналы
-
-
-class_num = 2
-input_chan = 1
-
 x = tf.placeholder(tf.float32, \
                    [None, sent_size, vec_size], name='x')
 y_ = tf.placeholder(tf.float32, \
@@ -29,12 +20,6 @@ y_ = tf.placeholder(tf.float32, \
 
 # reshape data to a 4d tensor
 x_tensor = tf.reshape(x, [-1, sent_size, vec_size, input_chan])
-
-filter_sizes = [2,3,4]
-num_filters = 100
-# THE 1 CONV LAYER
-# x = [n, 16, 300, 1]
-# conv = [2, 300, 1, 50] => x = [n, 8, 150, 50]
 
 pooled_outputs = []
 for i, filter_size in enumerate(filter_sizes):
@@ -71,11 +56,14 @@ y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
 
 # def train_and_evaluate():
 cross_entropy = tf.reduce_mean(
-    tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y_conv))
+    tf.nn.softmax_cross_entropy_with_logits(labels=y_, \
+                                            logits=y_conv))
 tf.summary.scalar('cross_entropy', cross_entropy)
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
-correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name = 'accuracy')
+correct_prediction = tf.equal(tf.argmax(y_conv, 1), \
+                              tf.argmax(y_, 1))
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, \
+                                  tf.float32), name = 'accuracy')
 tf.summary.scalar('accuracy', accuracy)
 merged = tf.summary.merge_all()
 
@@ -87,11 +75,12 @@ model_data = './saved/my_model'
 new_batch = next_batch(test_corpora, 1000, vec_size)
 
 with tf.Session() as sess:
-    train_writer = tf.summary.FileWriter("output/train", \
-                                         sess.graph)
-    test_writer = tf.summary.FileWriter("output/test", \
-                                        sess.graph)
-    test_new_writer = tf.summary.FileWriter("output/test_new", sess.graph)
+    train_writer = tf.summary.FileWriter(
+        "output/train", sess.graph)
+    test_writer = tf.summary.FileWriter(
+        "output/test", sess.graph)
+    test_new_writer = tf.summary.FileWriter(
+        "output/test_new", sess.graph)
     sess.run(tf.global_variables_initializer())
     saver = tf.train.Saver()
     for i in range(8000):
@@ -104,13 +93,16 @@ with tf.Session() as sess:
             x: batch[0], y_: batch[1], keep_prob: 0.8})
         if i % 50 == 0:
             train_writer.add_summary(summary, i)
-            summary, acc_old = sess.run([merged, accuracy], feed_dict={
+            summary, acc_old = sess.run(
+                [merged, accuracy], feed_dict={
                 x: batch[0], y_: batch[1], keep_prob: 1.0})
             test_writer.add_summary(summary, i)
-            summary, acc_new = sess.run([merged, accuracy], feed_dict={
-                x: new_batch[0], y_: new_batch[1], keep_prob: 1.0})
+            summary, acc_new = sess.run(
+                [merged, accuracy], feed_dict={
+                x: new_batch[0], y_: new_batch[1], \
+                    keep_prob: 1.0})
             test_new_writer.add_summary(summary, i)
-            print('step %d, acc on old %.2f, on new %.2f' % (i, acc_old, \
-                                                             acc_new))
+            print('step %d, acc on old %.2f, on new %.2f' % (
+                i, acc_old, acc_new))
         if i % 500 == 0:
             saver.save(sess, model_data, global_step=i)

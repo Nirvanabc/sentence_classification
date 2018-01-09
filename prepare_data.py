@@ -1,11 +1,11 @@
 import struct
-# from nltk.tokenize import sent_tokenize
 import re
 import numpy as np
 from numpy.random import normal
 from random import shuffle
 import pickle
 from constants import *
+import gensim
 
 def read_word_and_its_vec(opened_file, vec_len):
     try:
@@ -126,5 +126,12 @@ def next_batch(corpora, n, vec_size):
     batch = [batch, labels]
     return batch
 
+# building a dictionary
+model = gensim.models.KeyedVectors.load_word2vec_format(
+    './softlink_en_big', binary=True)
+dictionary = {}
+for key in model.vocab:
+    if str.isalpha(key):
+        dictionary[key.lower()] = model.wv[key]
 
-dictionary, vec_size = get_dict(en_dict_source)
+# dictionary, vec_size = get_dict(en_dict_source)

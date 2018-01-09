@@ -1,6 +1,11 @@
 label_bad = 0
 label_good = 1
 sent_size = 30
-vec_size = 100
+vec_size = 300
 ru_dict_source = 'softlink_ru'
 en_dict_source = 'softlink_en'
+en_dict_big_source = 'softlink_en_big'
+class_num = 2
+input_chan = 1
+filter_sizes = [2,3,4]
+num_filters = 100
