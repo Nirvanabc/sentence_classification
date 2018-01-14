@@ -22,7 +22,9 @@ prepare_data.py -- имеет два назначеня:
 
 tensor.py -- реализация CNN
 
-tensor_board.py -- то же, что и tensor, только не производится
+tensor_2.py -- различные тестовые вариации CNN
+
+board.py -- то же, что и tensor, только не производится
   обучение и скачивание словаря. Нужен для визуализации структуры
   сети
 
@@ -92,3 +94,9 @@ https://streamhacker.com/2010/05/10/text-classification-sentiment-analysis-naive
 http://text-processing.com/demo/sentiment/
 и ещё
 http://www.laurentluce.com/posts/twitter-sentiment-analysis-using-python-and-nltk/
+
+
+
+OUTPUT:
+x = [n, 30, 300, 1] => (conv) {[n, 29, 1, 100], [n, 28, 1, 100], [n, 27, 1, 100]} -- если 3 вида
+ядер, 2,3 и 4. Затем max_pool: [n, 1, 1, 100] * 3 => [n,1,1,300] => [n, 300]

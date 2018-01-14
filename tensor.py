@@ -1,4 +1,3 @@
-from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from prepare_data import *
 import numpy as np
@@ -28,7 +27,7 @@ for i, filter_size in enumerate(filter_sizes):
     b_conv = bias_variable([num_filters])
     conv = tf.nn.conv2d(x_tensor, W_conv, strides=[1, 1, 1, 1], \
                         padding="VALID")
-    h = tf.nn.relu(tf.nn.bias_add(conv, b_conv))
+    h = tf.nn.sigmoid(tf.nn.bias_add(conv, b_conv))
     pooled = tf.nn.max_pool(
         h,
         ksize=[1, sent_size - filter_size + 1, 1, 1],
