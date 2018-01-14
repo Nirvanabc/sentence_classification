@@ -12,14 +12,6 @@ def bias_variable(shape):
     initial = tf.constant(0.1, shape=shape)
     return tf.Variable(initial)        
 
-def conv_layer(x, ker_size, in_chan, out_chan):
-    W_conv = weight_variable([ker_size, vec_size, \
-                              in_chan, out_chan])
-    b_conv = bias_variable([out_chan])
-    h_conv = tf.nn.relu(conv2d(x, W_conv) + b_conv)
-    h_pool = max_pool_2x2(h_conv)
-    return h_pool
-
 
 x = tf.placeholder(tf.float32, \
                    [None, sent_size, vec_size], name='x')
