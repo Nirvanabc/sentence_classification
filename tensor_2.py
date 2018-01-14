@@ -30,21 +30,26 @@ for i, filter_size in enumerate(filter_sizes):
                         padding="VALID")
     h = tf.nn.relu(tf.nn.bias_add(conv, b_conv))
 
-    W_conv2 = weight_variable([filter_size, 1, 100, 200])
-    b_conv2 = bias_variable([200])
-    conv2 = tf.nn.conv2d(h, W_conv2, strides=[1, 1, 1, 1], \
-                         padding="VALID")
-    h2 = tf.nn.relu(tf.nn.bias_add(conv2, b_conv2))
+#     W_conv2 = weight_variable([filter_size, 1, 100, 200])
+#     b_conv2 = bias_variable([200])
+#     conv2 = tf.nn.conv2d(h, W_conv2, strides=[1, 1, 1, 1], \
+#                          padding="VALID")
+#     h2 = tf.nn.relu(tf.nn.bias_add(conv2, b_conv2))
+#     pooled = tf.nn.max_pool(
+#         h,
+#         ksize=[1, sent_size - 2*filter_size + 2, 1, 1],
+#         strides=[1, 1, 1, 1],
+#         padding='VALID')
     pooled = tf.nn.max_pool(
-        h2,
-        ksize=[1, sent_size - 2*filter_size + 2, 1, 1],
+        h,
+        ksize=[1, sent_size - filter_size + 1, 1, 1],
         strides=[1, 1, 1, 1],
         padding='VALID')
     pooled_outputs.append(pooled)
 
 
 # Combine all the pooled features
-num_filters_total = 2 * num_filters * len(filter_sizes)
+num_filters_total = num_filters * len(filter_sizes)
 h_pool = tf.concat(pooled_outputs, 3)
 h_pool_flat = tf.reshape(h_pool, [-1, num_filters_total])
 

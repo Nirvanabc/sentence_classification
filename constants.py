@@ -6,5 +6,6 @@ ru_dict_source = 'softlink_ru'
 en_dict_source = 'softlink_en'
 class_num = 2
 input_chan = 1
-filter_sizes = [2,3,4]
-num_filters = 100
+filter_sizes = [2,3,4,5,6]
+num_filters = 170
+
