@@ -1,0 +1,16 @@
+1. http://karpathy.github.io/2015/05/21/rnn-effectiveness/  --
+статья Карпатова на английском о результатах работы, с ссылками на исходный
+код (github)
+
+2. https://colah.github.io/posts/2015-08-Understanding-LSTMs/ --
+англ. статья про LSTM
+
+3. https://moluch.ru/archive/95/21426/ -- перевод 2. (легче по нему)
+
+5. https://www.youtube.com/watch?v=vT1JzLTH4G4&list=PL3FW7Lu3i5JvHM8ljYj-zLfQRF3EO8sYv&index=1 курс Стенфорда по CNN (раньше
+преподавал А. Карпатый)
+
+6. http://cs231n.github.io/neural-networks-case-study/
+Написание softmax, cross entropy и backpropagation
+
+7. https://cs.stanford.edu/people/karpathy/cs231nfiles/minimal_net.html рисунок результата (и весь код впридачу)
