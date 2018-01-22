@@ -10,8 +10,7 @@ def parse_reviews(url, pages):
     as a list of text corpuses
     '''
     corpora = []
-    for i in range(1, 3):
-        #pages):
+    for i in range(1, pages):
         curr_url = url.replace('*', str(i))
         html = urllib.request.urlopen(curr_url).read()
         soup = BeautifulSoup(html, "html5lib")
@@ -39,16 +38,14 @@ def make_corpora():
     stores data in pickle files.
     '''
     file_corpora_bad = open('corpora_bad_kp', 'w')
-    file_corpora_good = open('corpora_good_kp', 'w')
+#    file_corpora_good = open('corpora_good_kp', 'w')
     url_bad = 'https://www.kinopoisk.ru/reviews/type/comment/status/bad/period/month/page/*/#list'
-    url_good = 'https://www.kinopoisk.ru/reviews/type/comment/status/good/period/month/page/*/#list'
+#     url_good = 'https://www.kinopoisk.ru/reviews/type/comment/status/good/period/month/page/*/#list'
     pages_bad = pages_good = 31
     corpora_bad = parse_reviews(url_bad, pages_bad)
-    corpora_good = parse_reviews(url_good, pages_good)
+    # corpora_good = parse_reviews(url_good, pages_good)
     for sent in corpora_bad:
         file_corpora_bad.write(sent)
-    # pickle.dump(corpora_bad, file_corpora_bad)
-    # pickle.dump(corpora_good, file_corpora_good)
-    
-
+#     for sent in corpora_good:
+#         file_corpora_good.write(sent)
 make_corpora()
