@@ -12,18 +12,17 @@ dropout_keep_prob = tf.placeholder(tf.float32)
 
 # LSTM layers
 for h in hidden_size:
-    outputs = _rnn_layer (h, outputs, seq_len,
+    outputs = _rnn_layer(h, outputs, seq_len,
                                 dropout_keep_prob)
 
 outputs = tf.reduce_mean(outputs, reduction_indices =[1])
 
 # fully connected layer
-w = tf.Variable(tf.truncated_normal([hidden_size
-                                     [ − 1], 2]))
-variable_summaries(w, 'final_layer/weights')
+w = tf.Variable(tf.truncated_normal([hidden_size[-1], 2]))
+# variable_summaries(w, 'final_layer/weights')
 
 b = tf.Variable(tf.constant (0.1, shape =[2]))
-variable_summaries(b, 'final_layer/biases')
+# variable_summaries(b, 'final_layer/biases')
 
 # linear activations
 activations = tf.nn.xw_plus_b(outputs, w, b)
@@ -34,8 +33,7 @@ losses = tf.nn. softmax_cross_entropy_with_logits(
 loss = tf.reduce_mean(losses , name='loss')
 tf.summary.scalar('loss', loss)
 
-train_step = tf.train.AdamOptimizer(learning_rate).
-minimize(loss)
+train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss)
 
 correct_pred = tf.equal(tf.argmax (predict, 1),
                         tf.argmax (target, 1))
@@ -77,10 +75,10 @@ train_writer = tf.summary.FileWriter('logs/train')
 validation_writer = tf.summary.FileWriter('logs/validation')
 train_writer.add_graph(rnn.input.graph)
 
-for i in range(FLAGS. train_steps ):
+for i in range(FLAGS.train_steps):
     # Perform training step
     x_train, y_train, train_seq_len = get_data.batch(
-        FLAGS.batch_size )
+        FLAGS.batch_size)
     train_loss , _, summary = sess.run(
         [rnn.loss, rnn.train_step,
          tf.summary.merge_all ()],
