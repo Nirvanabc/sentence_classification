@@ -1,5 +1,4 @@
 # see Fanifatieva for details
-
 import tensorflow as tf
 input_data = tf.placeholder(tf.int32, [None, max_length])
 
