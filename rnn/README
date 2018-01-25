@@ -26,5 +26,9 @@ iter 125000, loss: 57.113956
 
 7. https://cs.stanford.edu/people/karpathy/cs231nfiles/minimal_net.html рисунок результата (и весь код впридачу)
 
-8. https://github.com/karpathy/char-rnn  код с LSTM (Torch), полезные вещи в описании (подбор параметров в зависимости
+8. https://github.com/karpathy/char-rnn  код с LSTM (Torch),
+полезные вещи в описании (подбор параметров в зависимости
 от размера данных, ссылки на полезную инфу).
+
+9. https://habrahabr.ru/post/342738/  tensorflow! LSTM! русский!
+генерация текстов по одному символу!

@@ -41,14 +41,20 @@ def lossFun(inputs, targets, hprev):
   loss = 0
   # forward pass
   for t in range(len(inputs)):
-    xs[t] = np.zeros((vocab_size,1)) # encode in 1-of-k representation
+    # encode in 1-of-k representation
+    xs[t] = np.zeros((vocab_size,1))
     xs[t][inputs[t]] = 1
-    hs[t] = np.tanh(np.dot(Wxh, xs[t]) + np.dot(Whh, hs[t-1]) + bh) # hidden state
-    ys[t] = np.dot(Why, hs[t]) + by # unnormalized log probabilities for next chars
-    ps[t] = np.exp(ys[t]) / np.sum(np.exp(ys[t])) # probabilities for next chars
-    loss += -np.log(ps[t][targets[t],0]) # softmax (cross-entropy loss)
+    hs[t] = np.tanh(np.dot(Wxh, xs[t]) + np.dot(Whh, hs[t-1]) + \
+                    bh) # hidden state
+    # unnormalized log probabilities for next chars
+    ys[t] = np.dot(Why, hs[t]) + by
+    # probabilities for next chars
+    ps[t] = np.exp(ys[t]) / np.sum(np.exp(ys[t]))
+    # softmax (cross-entropy loss)
+    loss += -np.log(ps[t][targets[t],0])
   # backward pass: compute gradients going backwards
-  dWxh, dWhh, dWhy = np.zeros_like(Wxh), np.zeros_like(Whh), np.zeros_like(Why)
+  dWxh, dWhh, dWhy = np.zeros_like(Wxh), np.zeros_like(Whh), \
+                     np.zeros_like(Why)
   dbh, dby = np.zeros_like(bh), np.zeros_like(by)
   dhnext = np.zeros_like(hs[0])
   for t in reversed(range(len(inputs))):
@@ -110,11 +116,10 @@ while True:
 
   # forward seq_length characters through the net and
   # fetch gradient
-  loss, dWxh, dWhh, dWhy, dbh, dby, hprev = lossFun(inputs, \
-                                                    targets, \
-                                                    hprev)
+  loss, dWxh, dWhh, dWhy, dbh, dby, hprev = lossFun(
+    inputs, targets, hprev)
   smooth_loss = smooth_loss * 0.999 + loss * 0.001
-   # print progress
+  # print progress
   if n % 500 == 0: print ('iter %d, loss: %f' % (n, smooth_loss))
   
   # perform parameter update with Adagrad

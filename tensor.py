@@ -12,8 +12,11 @@ def bias_variable(shape):
     initial = tf.constant(0.1, shape=shape)
     return tf.Variable(initial)
 
+# input data
 x = tf.placeholder(tf.float32, \
                    [None, sent_size, vec_size], name='x')
+
+# target
 y_ = tf.placeholder(tf.float32, \
                     shape=[None, class_num], name='y_')
 
