@@ -1,5 +1,5 @@
 hidden_size = 100 # size of hidden layer of neurons
-seq_length = 25 # number of steps to unroll the RNN for
+seq_len = 25 # number of steps to unroll the RNN for
 learning_rate = 1e-1
 
 batch_size = 100        # Размер пакета
