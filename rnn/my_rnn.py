@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 from constants import *
+import time
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)

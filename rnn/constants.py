@@ -11,4 +11,6 @@ keep_prob = 0.5         # Dropout keep probability
 
 epochs = 20
 # Сохраняться каждый N итераций
-save_every_n = 200
+save_every_n = 2
+# количество сохранённых версий
+max_to_keep=100
