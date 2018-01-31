@@ -173,123 +173,79 @@ class CharRNN:
         self.optimizer = build_optimizer(self.loss, learning_rate, grad_clip)
 
             
-def pick_top_n(preds, vocab_size, top_n=5):
-    '''
-    оставляет 5 наиболее вероятных букв.
-    '''
-    p = np.squeeze(preds)
-    p[np.argsort(p)[:-top_n]] = 0
-    p = p / np.sum(p)
-    c = np.random.choice(vocab_size, 1, p=p)[0]
-    return c
 
-
-def sample(checkpoint, n_samples, lstm_size, vocab_size, prime="В этой научной статье"):
-    samples = [c for c in prime]
-    model = CharRNN(len(vocab), lstm_size=lstm_size, sampling=True)
-    saver = tf.train.Saver()
-    with tf.Session() as sess:
-        saver.restore(sess, checkpoint)
-        new_state = sess.run(model.initial_state)
-        for c in prime:
-            x = np.zeros((1, 1))
-            x[0,0] = vocab_to_int[c]
-            feed = {model.inputs: x,
-                    model.keep_prob: 1.,
-                    model.initial_state: new_state}
-            preds, new_state = sess.run([model.prediction, model.final_state],
-                                        feed_dict=feed)
-            
-        c = pick_top_n(preds, len(vocab))
-        samples.append(int_to_vocab[c])
-        for i in range(n_samples):
-            x[0,0] = c
-            feed = {model.inputs: x,
-                    model.keep_prob: 1.,
-                    model.initial_state: new_state}
-            preds, new_state = sess.run([model.prediction, model.final_state],
-                                        feed_dict=feed)
-            
-            c = pick_top_n(preds, len(vocab))
-            samples.append(int_to_vocab[c])
-            
-    return ''.join(samples)
-
-
-def print_sample(checkpoint):
-    samp = sample(checkpoint, 1000, lstm_size, len(vocab))
-    print(samp)
-
-
-
-# Можно раскомментировать строчку ниже и продолжить
-# обучение с checkpoint'а
 # saver.restore(sess, 'checkpoints/______.ckpt')
 
-counter = 0
-
-model = CharRNN(len(vocab), batch_size=batch_size,
-                num_steps=num_steps,
-                lstm_size=lstm_size, num_layers = num_layers,
-                learning_rate=learning_rate)
-
-saver = tf.train.Saver(max_to_keep=100)
-sess = tf.Session()
-sess.run(tf.global_variables_initializer())
-
-test_writer = tf.summary.FileWriter(
-    "output/", sess.graph)
-
-tf.summary.scalar('batch_loss', model.loss)
-merged = tf.summary.merge_all()
-
-for e in range(epochs):
-    # Обучаем сеть
-    new_state = sess.run(model.initial_state)
-    loss = 0
-
-    for x, y in get_batches(encoded, batch_size, num_steps):
-        counter += 1
-        start = time.time()
-        feed = {model.inputs: x,
-                model.targets: y,
-                model.keep_prob: keep_prob,
-                model.initial_state: new_state}
-        batch_loss, new_state, summary, _ = sess.run(
-            [model.loss,
-             model.final_state,
-             merged,
-             model.optimizer],
-            feed_dict=feed)
-
-        test_writer.add_summary(summary, counter)
-        end = time.time()
-        
-        print('Epoch: {}/{}... '.format(e+1, epochs),
-              'Training Step: {}... '.format(counter),
-              'Training loss: {:.4f}... '.format(batch_loss),
-              '{:.4f} sec/batch'.format((end-start)))
-        
-        if (counter % save_every_n == 0):
-            check_p = "checkpoints/i{}_l{}.ckpt".format(
-                counter, lstm_size)
-            print(check_p)
-            saver.save(sess, check_p)
-            # # to see the result every n steps uncomment:
-            # sess.close()
-            # print_sample(check_p)
-            # model = CharRNN(len(vocab), batch_size=batch_size,
-            #     num_steps=num_steps,
-            #     lstm_size=lstm_size, num_layers = num_layers,
-            #     learning_rate=learning_rate)
-            # 
-            # # saver = tf.train.Saver(max_to_keep=100)
-            # # tf.summary.scalar('batch_loss', model.loss)
-            # # merged = tf.summary.merge_all()
-            # init = tf.global_variables_initializer()
-            # sess = tf.Session()
-            # sess.run(init)
-            # saver.restore(sess, check_p)
+def main(check_p = 0):
+    counter = 0
+    
+    model = CharRNN(len(vocab), batch_size=batch_size,
+                    num_steps=num_steps,
+                    lstm_size=lstm_size, num_layers = num_layers,
+                    learning_rate=learning_rate)
+    
+    saver = tf.train.Saver(max_to_keep=100)
+    sess = tf.Session()
+    sess.run(tf.global_variables_initializer())
+    # Можно раскомментировать строчку ниже и продолжить
+    # обучение с checkpoint'а
+    saver.restore(sess, check_p)
+    
+    test_writer = tf.summary.FileWriter(
+        "output/", sess.graph)
+    
+    tf.summary.scalar('batch_loss', model.loss)
+    merged = tf.summary.merge_all()
+    
+    for e in range(epochs):
+        # Обучаем сеть
+        new_state = sess.run(model.initial_state)
+        loss = 0
+    
+        for x, y in get_batches(encoded, batch_size, num_steps):
+            counter += 1
+            start = time.time()
+            feed = {model.inputs: x,
+                    model.targets: y,
+                    model.keep_prob: keep_prob,
+                    model.initial_state: new_state}
+            batch_loss, new_state, summary, _ = sess.run(
+                [model.loss,
+                 model.final_state,
+                 merged,
+                 model.optimizer],
+                feed_dict=feed)
+    
+            test_writer.add_summary(summary, counter)
+            end = time.time()
             
-saver.save(sess, "checkpoints/i{}_l{}.ckpt".format(
-    counter, lstm_size))
+            print('Epoch: {}/{}... '.format(e+1, epochs),
+                  'Training Step: {}... '.format(counter),
+                  'Training loss: {:.4f}... '.format(batch_loss),
+                  '{:.4f} sec/batch'.format((end-start)))
+            
+            if (counter % save_every_n == 0):
+                check_p = "checkpoints/i{}_l{}.ckpt".format(
+                    counter, lstm_size)
+                print(check_p)
+                saver.save(sess, check_p)
+                # # to see the result every n steps uncomment:
+                # sess.close()
+                # print_sample(check_p)
+                # model = CharRNN(len(vocab),
+                #     batch_size=batch_size,
+                #     num_steps=num_steps,
+                #     lstm_size=lstm_size,
+                #     num_layers = num_layers,
+                #     learning_rate=learning_rate)
+                # 
+                # # saver = tf.train.Saver(max_to_keep=100)
+                # # tf.summary.scalar('batch_loss', model.loss)
+                # # merged = tf.summary.merge_all()
+                # init = tf.global_variables_initializer()
+                # sess = tf.Session()
+                # sess.run(init)
+                # saver.restore(sess, check_p)
+                
+    saver.save(sess, "checkpoints/i{}_l{}.ckpt".format(
+        counter, lstm_size))
