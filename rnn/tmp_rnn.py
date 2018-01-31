@@ -3,15 +3,15 @@ import numpy as np
 from constants import *
 import time
 
-def weight_variable(shape):
-    initial = tf.truncated_normal(shape, stddev=0.1)
-    return tf.Variable(initial)
+# def weight_variable(shape, name):
+#     initial = tf.truncated_normal(shape, stddev=0.1, name=name+'_const')
+#     return tf.Variable(initial, name=name)
+# 
+# def bias_variable(shape, name):
+#     initial = tf.constant(0.1, shape=shape, name=name+'_const')
+#     return tf.Variable(initial, name=name)
 
-def bias_variable(shape):
-    initial = tf.constant(0.1, shape=shape)
-    return tf.Variable(initial)
 
-f = open('short_input.txt', 'r')
 text=f.read()
 vocab = sorted(set(text))
 vocab_to_int = {c: i for i, c in enumerate(vocab)}
@@ -87,12 +87,14 @@ def build_output(lstm_output, in_size, out_size):
     # вытягиваем и решэйпим тензор, выполняя  3D -> 2D
     seq_output = tf.concat(lstm_output, axis=1)
     x = tf.reshape(seq_output, [-1, in_size])
-    softmax_w = weight_variable([in_size, out_size])
-    softmax_b = bias_variable(out_size)
+    # with tf.variable_scope('softmax'):
+    softmax_w = tf.Variable(tf.truncated_normal((in_size, out_size), stddev=0.1))
+    softmax_b = tf.Variable(tf.zeros(out_size))
     logits = tf.matmul(x, softmax_w) + softmax_b
     ## FIXME! выяснить, зачем softmax, если в build_loss
     # есть softmax_cross_entropy_with_logits
-    out = tf.nn.softmax(logits)
+    
+    out = tf.nn.softmax(logits, name='predictions')
     return out, logits
 
 
@@ -135,38 +137,40 @@ def build_optimizer(loss, learning_rate, grad_clip):
 
 class CharRNN:
     def __init__(self, num_classes, batch_size=64, num_steps=50,
-                 lstm_size=128, num_layers=2, learning_rate=0.001,
+                 lstm_size=128, num_layers=2,
+                 learning_rate=0.001,
                  grad_clip=5, sampling=False):
         
-        # Мы будем использовать эту же сеть для сэмплирования (генерации текста),
+        # Мы будем использовать эту же сеть для сэмплирования
+        # (генерации текста),
         # при этом будем подавать по одному символу за один раз
         if sampling == True:
             batch_size, num_steps = 1, 1
         else:
             batch_size, num_steps = batch_size, num_steps
             
-            tf.reset_default_graph()
-            
-            # Получаем input placeholder'ы
-            self.inputs, self.targets, self.keep_prob = build_inputs(batch_size, num_steps)
-            
-            # Строим LSTM ячейку
-            cell, self.initial_state = build_lstm(lstm_size, num_layers, batch_size, self.keep_prob)
-            
-            ### Прогоняем данные через RNN слои
-            # Делаем one-hot кодирование входящих данных
-            x_one_hot = tf.one_hot(self.inputs, num_classes)
-            
-            # Прогоняем данные через RNN и собираем результаты
-            outputs, state = tf.nn.dynamic_rnn(cell, x_one_hot, initial_state=self.initial_state)
-            self.final_state = state
-            
-            # Получаем предсказания (softmax) и результат logit-функции
-            self.prediction, self.logits = build_output(outputs, lstm_size, num_classes)
-            
-            # Считаем потери и оптимизируем (с обрезкой градиента)
-            self.loss = build_loss(self.logits, self.targets, lstm_size, num_classes)
-            self.optimizer = build_optimizer(self.loss, learning_rate, grad_clip)
+        tf.reset_default_graph()
+        
+        # Получаем input placeholder'ы
+        self.inputs, self.targets, self.keep_prob = build_inputs(batch_size, num_steps)
+        
+        # Строим LSTM ячейку
+        cell, self.initial_state = build_lstm(lstm_size, num_layers, batch_size, self.keep_prob)
+        
+        ### Прогоняем данные через RNN слои
+        # Делаем one-hot кодирование входящих данных
+        x_one_hot = tf.one_hot(self.inputs, num_classes)
+        
+        # Прогоняем данные через RNN и собираем результаты
+        outputs, state = tf.nn.dynamic_rnn(cell, x_one_hot, initial_state=self.initial_state)
+        self.final_state = state
+        
+        # Получаем предсказания (softmax) и результат logit-функции
+        self.prediction, self.logits = build_output(outputs, lstm_size, num_classes)
+        
+        # Считаем потери и оптимизируем (с обрезкой градиента)
+        self.loss = build_loss(self.logits, self.targets, lstm_size, num_classes)
+        self.optimizer = build_optimizer(self.loss, learning_rate, grad_clip)
 
             
 def pick_top_n(preds, vocab_size, top_n=5):
@@ -212,53 +216,80 @@ def sample(checkpoint, n_samples, lstm_size, vocab_size, prime="В этой на
     return ''.join(samples)
 
 
-def print_sample():
-    checkpoint = 'checkpoints/i200_l512.ckpt'
+def print_sample(checkpoint):
     samp = sample(checkpoint, 1000, lstm_size, len(vocab))
     print(samp)
 
+
+
+# Можно раскомментировать строчку ниже и продолжить
+# обучение с checkpoint'а
+# saver.restore(sess, 'checkpoints/______.ckpt')
+
+counter = 0
 
 model = CharRNN(len(vocab), batch_size=batch_size,
                 num_steps=num_steps,
                 lstm_size=lstm_size, num_layers = num_layers,
                 learning_rate=learning_rate)
 
-epochs = 20
-# Сохраняться каждый N итераций
-save_every_n = 200
 saver = tf.train.Saver(max_to_keep=100)
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
 
-with tf.Session() as sess:
-    sess.run(tf.global_variables_initializer())
-    
-    # Можно раскомментировать строчку ниже и продолжить
-    # обучение с checkpoint'а
-    # saver.restore(sess, 'checkpoints/______.ckpt')
-    counter = 0
-    for e in range(epochs):
-        # Обучаем сеть
-        new_state = sess.run(model.initial_state)
-        loss = 0
-        for x, y in get_batches(encoded, batch_size, num_steps):
-            counter += 1
-            start = time.time()
-            feed = {model.inputs: x,
-                    model.targets: y,
-                    model.keep_prob: keep_prob,
-                    model.initial_state: new_state}
-            batch_loss, new_state, _ = sess.run(
-                [model.loss,
-                 model.final_state,
-                 model.optimizer],
-                feed_dict=feed)
+test_writer = tf.summary.FileWriter(
+    "output/", sess.graph)
+
+tf.summary.scalar('batch_loss', model.loss)
+merged = tf.summary.merge_all()
+
+for e in range(epochs):
+    # Обучаем сеть
+    new_state = sess.run(model.initial_state)
+    loss = 0
+
+    for x, y in get_batches(encoded, batch_size, num_steps):
+        counter += 1
+        start = time.time()
+        feed = {model.inputs: x,
+                model.targets: y,
+                model.keep_prob: keep_prob,
+                model.initial_state: new_state}
+        batch_loss, new_state, summary, _ = sess.run(
+            [model.loss,
+             model.final_state,
+             merged,
+             model.optimizer],
+            feed_dict=feed)
+
+        test_writer.add_summary(summary, counter)
+        end = time.time()
+        
+        print('Epoch: {}/{}... '.format(e+1, epochs),
+              'Training Step: {}... '.format(counter),
+              'Training loss: {:.4f}... '.format(batch_loss),
+              '{:.4f} sec/batch'.format((end-start)))
+        
+        if (counter % save_every_n == 0):
+            check_p = "checkpoints/i{}_l{}.ckpt".format(
+                counter, lstm_size)
+            print(check_p)
+            saver.save(sess, check_p)
+            # # to see the result every n steps uncomment:
+            # sess.close()
+            # print_sample(check_p)
+            # model = CharRNN(len(vocab), batch_size=batch_size,
+            #     num_steps=num_steps,
+            #     lstm_size=lstm_size, num_layers = num_layers,
+            #     learning_rate=learning_rate)
+            # 
+            # # saver = tf.train.Saver(max_to_keep=100)
+            # # tf.summary.scalar('batch_loss', model.loss)
+            # # merged = tf.summary.merge_all()
+            # init = tf.global_variables_initializer()
+            # sess = tf.Session()
+            # sess.run(init)
+            # saver.restore(sess, check_p)
             
-            end = time.time()
-            print('Epoch: {}/{}... '.format(e+1, epochs),
-                  'Training Step: {}... '.format(counter),
-                  'Training loss: {:.4f}... '.format(batch_loss),
-                  '{:.4f} sec/batch'.format((end-start)))
-            
-            if (counter % save_every_n == 0):
-                saver.save(sess, "checkpoints/i{}_l{}.ckpt".format(counter, lstm_size))
-                print_sample()
-    saver.save(sess, "checkpoints/i{}_l{}.ckpt".format(counter, lstm_size))
+saver.save(sess, "checkpoints/i{}_l{}.ckpt".format(
+    counter, lstm_size))
