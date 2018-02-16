@@ -1,7 +1,6 @@
 import tensorflow as tf
 import numpy as np
-# from char_constants import *
-from constants import *
+from char_constants import *
 import time
 
 text=f.read()
@@ -153,7 +152,8 @@ class CharRNN:
         tf.reset_default_graph()
         
         # Получаем input placeholder'ы
-        self.inputs, self.targets, self.keep_prob = build_inputs(batch_size, num_steps)
+        self.inputs, self.targets, self.keep_prob = build_inputs(
+            batch_size, num_steps)
         
         # Строим LSTM ячейку
         cell, self.initial_state = build_lstm(
@@ -179,7 +179,6 @@ class CharRNN:
             self.loss, learning_rate, grad_clip)
 
             
-
 def main(check_p = 0):
     counter = 0
     

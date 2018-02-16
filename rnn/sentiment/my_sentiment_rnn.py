@@ -147,39 +147,42 @@ class LSTMNetwork (object):
         tf.summary.scalar ('accuracy', self.accuracy)
 
 
-rnn = LSTMNetwork(hidden_size=[hidden_size],
-                   embedding_size=embedding_size,
-                   vocabulary_size=get_data.vocab_size,
-                    sent_size = get_data.sequence_len,
-                   learning_rate =learning_rate)
+def main():
+    counter = 0
+    rnn = LSTMNetwork(hidden_size=[hidden_size],
+                      embedding_size=embedding_size,
+                      vocabulary_size=get_data.vocab_size,
+                      sent_size = max_length,
+                      learning_rate =learning_rate)
             
-sess = tf.Session()
-sess.run(tf.initialize_all_variables())
-saver = tf.train.Saver()
-            
-x_validation, y_validation, validation_seq_len = get_data.get_validation_data()
-train_writer = tf.summary.FileWriter('logs/train')
-validation_writer = tf.summary.FileWriter('logs/validation')
-train_writer.add_graph(rnn.input.graph)
+    sess = tf.Session()
+    sess.run(tf.initialize_all_variables())
+
+    # x_validation, y_validation, validation_seq_len = get_data.get_validation_data()
+    # train_writer = tf.summary.FileWriter('logs/train')
+    # validation_writer = tf.summary.FileWriter('logs/validation')
+    # train_writer.add_graph(rnn.input.graph)
 
 
-for i in range(train_steps):
-    x_train, y_train, train_seq_len = get_data.batch(batch_size)
-    train_loss, _, summary = sess.run(
-        [rnn.loss, rnn.train_step, tf.summary.merge_all()],
-        feed_dict = {
-            rnn.input:x_train,
-            rnn.target: y_train,
-            rnn.seq_len: train_seq_len,
-            rnn.dropout_keep_prob: dropout_keep_prob})
-            train_writer.add_summary(summary, i)
-    if (i + 1) % validate_every == 0:
-        validation_loss, accuracy, summary = sess.run(
-            [rnn.loss ,
-             rnn.accuracy, tf.summary.merge_all()],
-            feed_dict ={ rnn.input: x_validation,
-                         rnn.target: y_validation,
-                         rnn.seq_len: validation_seq_len,
-                         rnn.dropout_keep_prob: 1})
-        validation_writer.add_summary (summary, i)
+    for i in range(epochs):
+        new_state = sess.run(model.initial_state)
+        loss = 0
+        for x, y in get_batches(encoded, batch_size, num_steps):
+            counter += 1
+            feed = {model.inputs: x,
+                    model.targets: y,
+                    model.keep_prob: keep_prob,
+                    model.initial_state: new_state}
+            batch_loss, new_state, _ = sess.run(
+                [model.loss,
+                 model.final_state,
+                 model.optimizer],
+                feed_dict=feed)
+            print('Epoch: {}/{}... '.format(e+1, epochs),
+                  'Training Step: {}... '.format(counter),
+                  'Training loss: {:.4f}... '.format(batch_loss))
+            if (counter % save_every_n == 0):
+                check_p = "checkpoints/i{}_l{}.ckpt".format(
+                    counter, lstm_size)
+                print(check_p)
             
