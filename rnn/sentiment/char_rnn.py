@@ -1,18 +1,8 @@
 import tensorflow as tf
 import numpy as np
+# from char_constants import *
 from constants import *
 import time
-
-# def weight_variable(shape, name):
-#     initial = tf.truncated_normal(shape,
-#                                   stddev=0.1,
-#                                   name=name+'_const')
-#     return tf.Variable(initial, name=name)
-# 
-# def bias_variable(shape, name):
-#     initial = tf.constant(0.1, shape=shape, name=name+'_const')
-#     return tf.Variable(initial, name=name)
-
 
 text=f.read()
 vocab = sorted(set(text))
@@ -32,11 +22,13 @@ def get_batches(arr, n_seqs, n_steps):
     n_seqs: Batch size, количество последовательностей в пакете
     n_steps: Sequence length, сколько "шагов" делаем в пакете
     '''
-    # Считаем количество символов на пакет и количество пакетов, которое можем сформировать
+    # Считаем количество символов на пакет
+    # и количество пакетов, которое можем сформировать
     characters_per_batch = n_seqs * n_steps
     n_batches = len(arr)//characters_per_batch
     
-    # Сохраняем в массиве только символы, которые позволяют сформировать целое число пакетов
+    # Сохраняем в массиве только символы, которые позволяют
+    # сформировать целое число пакетов
     arr = arr[:n_batches * characters_per_batch]
     
     # Делаем reshape 1D -> 2D, используя n_seqs как число строк
@@ -45,28 +37,34 @@ def get_batches(arr, n_seqs, n_steps):
     for n in range(0, arr.shape[1], n_steps):
         # пакет данных, который будет подаваться на вход сети
         x = arr[:, n:n+n_steps]
-        # целевой пакет, с которым будем сравнивать предсказание, получаем сдвиганием "x" на один символ вперед
+        # целевой пакет, с которым будем сравнивать
+        # предсказание, получаем сдвиганием "x" на один
+        # символ вперед
         y = np.zeros_like(x)
         y[:, :-1], y[:, -1] = x[:, 1:], x[:, 0]
         yield x, y
 
         
 def build_inputs(batch_size, num_steps):
-    ''' Определяем placeholder'ы для входных, целевых данных, а также вероятности drop out
+    ''' Определяем placeholder'ы для входных, целевых данных, 
+    а также вероятности drop out
 
     Аргументы
     ---------
-    batch_size: Batch size, количество последовательностей в пакете
+    batch_size: Batch size, количество последовательностей 
+    в пакете
     num_steps: Sequence length, сколько "шагов" делаем в пакете
     
     '''
-    inputs = tf.placeholder(tf.int32, [batch_size, num_steps], name='inputs')
-    targets = tf.placeholder(tf.int32, [batch_size, num_steps], name='targets')
+    inputs = tf.placeholder(tf.int32, [batch_size, num_steps],
+                            name='inputs')
+    targets = tf.placeholder(tf.int32, [batch_size, num_steps],
+                             name='targets')
     # Placeholder для вероятности drop out
     keep_prob = tf.placeholder(tf.float32, name='keep_prob')
     return inputs, targets, keep_prob
 
-        
+
 def build_lstm(lstm_size, num_layers, batch_size, keep_prob):
     def build_cell(lstm_size, keep_prob):
         lstm = tf.contrib.rnn.BasicLSTMCell(lstm_size)
@@ -158,26 +156,29 @@ class CharRNN:
         self.inputs, self.targets, self.keep_prob = build_inputs(batch_size, num_steps)
         
         # Строим LSTM ячейку
-        cell, self.initial_state = build_lstm(lstm_size, num_layers, batch_size, self.keep_prob)
+        cell, self.initial_state = build_lstm(
+            lstm_size, num_layers, batch_size, self.keep_prob)
         
         ### Прогоняем данные через RNN слои
         # Делаем one-hot кодирование входящих данных
         x_one_hot = tf.one_hot(self.inputs, num_classes)
         
         # Прогоняем данные через RNN и собираем результаты
-        outputs, state = tf.nn.dynamic_rnn(cell, x_one_hot, initial_state=self.initial_state)
+        outputs, state = tf.nn.dynamic_rnn(
+            cell, x_one_hot, initial_state=self.initial_state)
         self.final_state = state
         
-        # Получаем предсказания (softmax) и результат logit-функции
-        self.prediction, self.logits = build_output(outputs, lstm_size, num_classes)
+        # Получаем предсказания (softmax) и рез-т logit-функции
+        self.prediction, self.logits = build_output(
+            outputs, lstm_size, num_classes)
         
         # Считаем потери и оптимизируем (с обрезкой градиента)
-        self.loss = build_loss(self.logits, self.targets, lstm_size, num_classes)
-        self.optimizer = build_optimizer(self.loss, learning_rate, grad_clip)
+        self.loss = build_loss(
+            self.logits, self.targets, lstm_size, num_classes)
+        self.optimizer = build_optimizer(
+            self.loss, learning_rate, grad_clip)
 
             
-
-# saver.restore(sess, 'checkpoints/______.ckpt')
 
 def main(check_p = 0):
     counter = 0
