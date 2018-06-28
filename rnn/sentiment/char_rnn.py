@@ -88,7 +88,8 @@ def build_output(lstm_output, in_size, out_size):
     seq_output = tf.concat(lstm_output, axis=1)
     x = tf.reshape(seq_output, [-1, in_size])
     # with tf.variable_scope('softmax'):
-    softmax_w = tf.Variable(tf.truncated_normal((in_size, out_size), stddev=0.1))
+    softmax_w = tf.Variable(tf.truncated_normal(
+        (in_size, out_size), stddev=0.1))
     softmax_b = tf.Variable(tf.zeros(out_size))
     logits = tf.matmul(x, softmax_w) + softmax_b
     ## FIXME! выяснить, зачем softmax, если в build_loss

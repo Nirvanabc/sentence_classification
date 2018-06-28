@@ -135,4 +135,4 @@ def next_batch(corpora, n, vec_size):
 #     if str.isalpha(key):
 #         dictionary[key.lower()] = model.wv[key]
 
-dictionary, vec_size = get_dict(en_dict_source)
+dictionary, embedding_size = get_dict(en_dict_source)
