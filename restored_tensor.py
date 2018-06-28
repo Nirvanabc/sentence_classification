@@ -1,12 +1,11 @@
 import tensorflow as tf
 from prepare_data import *
 
-sent_size = 16
+sent_size = 30
 class_num = 2
 vec_size = 100
-
-saver = tf.train.import_meta_graph('saved/my_model-2080.meta')
 sess = tf.Session()
+saver = tf.train.import_meta_graph('saved/my_model-7500.meta')
 saver.restore(sess, tf.train.latest_checkpoint("./saved/"))
 
 graph = tf.get_default_graph()
@@ -18,11 +17,10 @@ accuracy = graph.get_tensor_by_name("accuracy:0")
 corpora_file = 'corpora_MR'
 corpora = open(corpora_file, 'r')
 
-
 def batch_classifier_online():
     batch = next_batch(corpora, 50, vec_size)
-    # the next line is mistakable! It sets all variables
-    # to random values!
+    # the next line will be mistakable! It sets all variables
+    # to random values, which canceles all saved values!
     # sess.run(tf.global_variables_initializer())
     feed_dict ={x:batch[0], y_:batch[1], keep_prob:1.0}
     with sess.as_default():
