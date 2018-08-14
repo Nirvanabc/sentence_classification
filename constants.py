@@ -8,4 +8,5 @@ class_num = 2
 input_chan = 1
 filter_sizes = [2,3,4,5]
 num_filters = 100
-
+batch_size = 50
+test_batch_size = 1000

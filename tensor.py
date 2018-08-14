@@ -2,7 +2,6 @@ import tensorflow as tf
 from prepare_data import *
 import numpy as np
 from constants import *
-from math import ceil
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
@@ -74,7 +73,7 @@ train_file = 'new_train_MR'
 test_corpora = open(test_file, 'r')
 train_corpora = open(train_file, 'r')
 model_data = './saved/my_model'
-new_batch = next_batch(test_corpora, 1000, vec_size)
+new_batch = next_batch(test_corpora, test_batch_size, vec_size)
 
 with tf.Session() as sess:
     train_writer = tf.summary.FileWriter(
@@ -86,11 +85,13 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     saver = tf.train.Saver()
     for i in range(8000):
-        batch = next_batch(train_corpora, 50, vec_size)
+        batch = next_batch(train_corpora, batch_size, vec_size)
         if batch == 0:
             train_corpora.close()
             train_corpora = open(train_file, 'r')
-            batch = next_batch(train_corpora, 50, vec_size)
+            batch = next_batch(train_corpora,
+                               batch_size,
+                               vec_size)
         summary, _ = sess.run([merged, train_step], feed_dict={
             x: batch[0], y_: batch[1], keep_prob: 0.8})
         if i % 50 == 0:
