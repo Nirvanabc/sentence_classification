@@ -68,52 +68,52 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, \
 tf.summary.scalar('accuracy', accuracy)
 merged = tf.summary.merge_all()
 
-model_data = './saved/my_model'
-new_batch_gen = next_batch(test_file, test_batch_size, vec_size)
-new_batch = next(new_batch_gen)
-
-with tf.Session() as sess:
-    train_writer = tf.summary.FileWriter(
-        "output/train", sess.graph)
-    test_writer = tf.summary.FileWriter(
-        "output/test", sess.graph)
-    test_new_writer = tf.summary.FileWriter(
-        "output/test_new", sess.graph)
-    sess.run(tf.global_variables_initializer())
-    saver = tf.train.Saver()
-
-    for epoch in range(epochs_num):
-        batch = next_batch(train_file,
-                           batch_size,
-                           vec_size)
-        # iteration
-        i = 0
-        while True:
-            batch_gener = next_batch(train_file,
-                               batch_size,
-                               vec_size)
-            try:
-                batch = next(batch_gener)
-            except StopIteration: break
-            summary, _ = sess.run([merged, train_step],
-                                  feed_dict={
-                                      x: batch[0],
-                                      y_: batch[1],
-                                      keep_prob: 0.8})
-            if i % 50 == 0:
-                train_writer.add_summary(summary, i)
-                summary, acc_old = sess.run(
-                    [merged, accuracy], feed_dict={
-                    x: batch[0], y_: batch[1], keep_prob: 1.0})
-                test_writer.add_summary(summary, i)
-                summary, acc_new = sess.run(
-                    [merged, accuracy], feed_dict={
-                    x: new_batch[0], y_: new_batch[1], \
-                        keep_prob: 1.0})
-                test_new_writer.add_summary(summary, i)
-                print('epoch %d, step %d, acc on old %.2f, on new %.2f' % (
-                    epoch, i, acc_old, acc_new))
-
-            if i % 500 == 0:
-                saver.save(sess, model_data, global_step=i)
-            i += 1
+# model_data = './saved/my_model'
+# new_batch_gen = next_batch(test_file, test_batch_size, vec_size)
+# new_batch = next(new_batch_gen)
+# 
+# with tf.Session() as sess:
+#     train_writer = tf.summary.FileWriter(
+#         "output/train", sess.graph)
+#     test_writer = tf.summary.FileWriter(
+#         "output/test", sess.graph)
+#     test_new_writer = tf.summary.FileWriter(
+#         "output/test_new", sess.graph)
+#     sess.run(tf.global_variables_initializer())
+#     saver = tf.train.Saver()
+# 
+#     for epoch in range(epochs_num):
+#         batch = next_batch(train_file,
+#                            batch_size,
+#                            vec_size)
+#         # iteration
+#         i = 0
+#         while True:
+#             batch_gener = next_batch(train_file,
+#                                batch_size,
+#                                vec_size)
+#             try:
+#                 batch = next(batch_gener)
+#             except StopIteration: break
+#             summary, _ = sess.run([merged, train_step],
+#                                   feed_dict={
+#                                       x: batch[0],
+#                                       y_: batch[1],
+#                                       keep_prob: 0.8})
+#             if i % 50 == 0:
+#                 train_writer.add_summary(summary, i)
+#                 summary, acc_old = sess.run(
+#                     [merged, accuracy], feed_dict={
+#                     x: batch[0], y_: batch[1], keep_prob: 1.0})
+#                 test_writer.add_summary(summary, i)
+#                 summary, acc_new = sess.run(
+#                     [merged, accuracy], feed_dict={
+#                     x: new_batch[0], y_: new_batch[1], \
+#                         keep_prob: 1.0})
+#                 test_new_writer.add_summary(summary, i)
+#                 print('epoch %d, step %d, acc on old %.2f, on new %.2f' % (
+#                     epoch, i, acc_old, acc_new))
+# 
+#             if i % 500 == 0:
+#                 saver.save(sess, model_data, global_step=i)
+#             i += 1

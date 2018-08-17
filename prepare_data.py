@@ -141,20 +141,30 @@ def next_batch(corpora_file, n, vec_size):
         batch = [batch, labels]
         yield batch
         
-def generate_arrays_from_file(path):
+        
+def generate_arrays_from_file(corpora_file, n = batch_size):
+    corpora = open(corpora_file, 'r')
+    
+    # until we reach the end of file
     while True:
-        f = open(path)
-        for line in f:
+        batch = []
+        labels = []
+        for _ in range(n):
+            sent = corpora.readline()
+            if len(sent) == 0:
+                corpora = open(corpora_file, 'r')
+                sent = corpora.readline()
             sent = sent.split()
             if sent[:-1] != []:
-                label = int(sent[-1])
-                x = sent[:-1]
-        x = prepare_corpora(x, vec_size, sent_size)
-        ## try to use one_hot func or sparce_multi_classification
-        labels_one_hot = [[1 - labels[i],
-                   labels[i]] for i in range(len(labels))]
-        yield (x, labels_one_hot)
-        
+                labels.append(int(sent[-1]))
+                batch.append(sent[:-1])
+        batch = np.array(prepare_corpora(batch,
+                                         vec_size,
+                                         sent_size))
+        labels = np.array([[1 - labels[i],
+                   labels[i]] for i in range(len(labels))])
+        yield(batch, labels)
+            
         
 # # building a dictionary
 # model = gensim.models.KeyedVectors.load_word2vec_format(
