@@ -68,10 +68,8 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, \
 tf.summary.scalar('accuracy', accuracy)
 merged = tf.summary.merge_all()
 
-test_corpora = open(test_file, 'r')
-train_corpora = open(train_file, 'r')
 model_data = './saved/my_model'
-new_batch_gen = next_batch(test_corpora, test_batch_size, vec_size)
+new_batch_gen = next_batch(test_file, test_batch_size, vec_size)
 new_batch = next(new_batch_gen)
 
 with tf.Session() as sess:
@@ -85,14 +83,13 @@ with tf.Session() as sess:
     saver = tf.train.Saver()
 
     for epoch in range(epochs_num):
-        train_corpora = open(train_file, 'r')
-        batch = next_batch(train_corpora,
+        batch = next_batch(train_file,
                            batch_size,
                            vec_size)
         # iteration
         i = 0
         while True:
-            batch_gener = next_batch(train_corpora,
+            batch_gener = next_batch(train_file,
                                batch_size,
                                vec_size)
             try:

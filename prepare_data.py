@@ -109,29 +109,11 @@ def store_data(data, file_to_store):
     pickle.dump(data, f)
     f.close()
 
-
-# def next_batch(corpora, n, vec_size):
-#     batch = []
-#     labels = []
-#     for _ in range(n):
-#         sent = corpora.readline()
-#         if len(sent) == 0:
-#             return 0
-#         sent = sent.split()
-#         if sent[:-1] != []:
-#             labels.append(int(sent[-1]))
-#             batch.append(sent[:-1])
-#     batch = prepare_corpora(batch, vec_size, sent_size)
-#     labels = [[1-labels[i], \
-#                labels[i]] for i in range(len(labels))]
-#     batch = [batch, labels]
-#     return batch
-
-
-def next_batch(corpora, n, vec_size):
+    
+def next_batch(corpora_file, n, vec_size):
     '''
     input:
-    corpora: opened file
+    corpora_file: file path
     n: size of returned batch
     
     return:
@@ -139,8 +121,9 @@ def next_batch(corpora, n, vec_size):
     or StopIteration when reach the end
     of the file
     '''
-
-    # util we reach the end of the file
+    
+    corpora = open(corpora_file, 'r')
+    # until we reach the end of file
     while True:
         batch = []
         labels = []
@@ -157,8 +140,22 @@ def next_batch(corpora, n, vec_size):
                    labels[i]] for i in range(len(labels))]
         batch = [batch, labels]
         yield batch
-
-
+        
+def generate_arrays_from_file(path):
+    while True:
+        f = open(path)
+        for line in f:
+            sent = sent.split()
+            if sent[:-1] != []:
+                label = int(sent[-1])
+                x = sent[:-1]
+        x = prepare_corpora(x, vec_size, sent_size)
+        ## try to use one_hot func or sparce_multi_classification
+        labels_one_hot = [[1 - labels[i],
+                   labels[i]] for i in range(len(labels))]
+        yield (x, labels_one_hot)
+        
+        
 # # building a dictionary
 # model = gensim.models.KeyedVectors.load_word2vec_format(
 #     './softlink_en_big', binary=True)
