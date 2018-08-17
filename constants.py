@@ -1,12 +1,14 @@
-epochs_num = 15
-## there were 8000 iterations instead
+test_file = 'new_test_MR'
+train_file = 'new_train_MR'
 
+ru_dict_source = 'softlink_ru'
+en_dict_source = 'softlink_en'
+
+epochs_num = 15
 label_bad = 0
 label_good = 1
 sent_size = 30
 vec_size = 100
-ru_dict_source = 'softlink_ru'
-en_dict_source = 'softlink_en'
 class_num = 2
 input_chan = 1
 filter_sizes = [2,3,4,5]

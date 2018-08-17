@@ -68,8 +68,6 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, \
 tf.summary.scalar('accuracy', accuracy)
 merged = tf.summary.merge_all()
 
-test_file = 'new_test_MR'
-train_file = 'new_train_MR'
 test_corpora = open(test_file, 'r')
 train_corpora = open(train_file, 'r')
 model_data = './saved/my_model'
