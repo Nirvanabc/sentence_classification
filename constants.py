@@ -1,3 +1,6 @@
+epochs_num = 15
+## there were 8000 iterations instead
+
 label_bad = 0
 label_good = 1
 sent_size = 30

@@ -59,7 +59,8 @@ def corpora2vec(corpora, vec_size):
         curr = []
         for word in sent:
             curr.append(word2vec(word, vec_size))
-            # to test without softlink_ru
+            # to test without softlink_ru (you also need to
+            # comment the last line of this file)
             # curr.append(normalize(normal(size = vec_size)))
         result.append(curr)
     return result
@@ -109,22 +110,54 @@ def store_data(data, file_to_store):
     f.close()
 
 
+# def next_batch(corpora, n, vec_size):
+#     batch = []
+#     labels = []
+#     for _ in range(n):
+#         sent = corpora.readline()
+#         if len(sent) == 0:
+#             return 0
+#         sent = sent.split()
+#         if sent[:-1] != []:
+#             labels.append(int(sent[-1]))
+#             batch.append(sent[:-1])
+#     batch = prepare_corpora(batch, vec_size, sent_size)
+#     labels = [[1-labels[i], \
+#                labels[i]] for i in range(len(labels))]
+#     batch = [batch, labels]
+#     return batch
+
+
 def next_batch(corpora, n, vec_size):
-    batch = []
-    labels = []
-    for _ in range(n):
-        sent = corpora.readline()
-        if len(sent) == 0:
-            return 0
-        sent = sent.split()
-        if sent[:-1] != []:
-            labels.append(int(sent[-1]))
-            batch.append(sent[:-1])
-    batch = prepare_corpora(batch, vec_size, sent_size)
-    labels = [[1-labels[i], \
-               labels[i]] for i in range(len(labels))]
-    batch = [batch, labels]
-    return batch
+    '''
+    input:
+    corpora: opened file
+    n: size of returned batch
+    
+    return:
+    batch of size n
+    or StopIteration when reach the end
+    of the file
+    '''
+
+    # util we reach the end of the file
+    while True:
+        batch = []
+        labels = []
+        for _ in range(n):
+            sent = corpora.readline()
+            if len(sent) == 0:
+                return
+            sent = sent.split()
+            if sent[:-1] != []:
+                labels.append(int(sent[-1]))
+                batch.append(sent[:-1])
+        batch = prepare_corpora(batch, vec_size, sent_size)
+        labels = [[1 - labels[i],
+                   labels[i]] for i in range(len(labels))]
+        batch = [batch, labels]
+        yield batch
+
 
 # # building a dictionary
 # model = gensim.models.KeyedVectors.load_word2vec_format(
